@@ -25,14 +25,14 @@
 
   window.OXYGEN_SCRIPTS_BASE = BASE;
 
-  function loadScript(path) {
-    return new Promise((resolve, reject) => {
-      const s = document.createElement('script');
-      s.src = `${BASE}/${path}`;
-      s.onload = resolve;
-      s.onerror = () => reject(new Error(`[Oxygen] Failed to load: ${path}`));
-      document.head.appendChild(s);
-    });
+  // Use fetch + eval to load scripts. This works with both jsdelivr
+  // (proper MIME type) and raw.githubusercontent.com (text/plain).
+  async function loadScript(path) {
+    const url = `${BASE}/${path}`;
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`[Oxygen] Failed to load ${path}: ${resp.status}`);
+    const code = await resp.text();
+    eval(code);
   }
 
   async function init() {
