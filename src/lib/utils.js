@@ -30,7 +30,7 @@ window.OxygenUtils = {
     while (Date.now() - start < timeout) {
       const el = document.querySelector(selector);
       if (el) return el;
-      await this.sleep(100);
+      await OxygenUtils.sleep(100);
     }
     return null;
   },
@@ -39,9 +39,9 @@ window.OxygenUtils = {
   async waitForVisibleLink(text, timeout = 5000) {
     const start = Date.now();
     while (Date.now() - start < timeout) {
-      const link = this.findVisibleLink(text);
+      const link = OxygenUtils.findVisibleLink(text);
       if (link) return link;
-      await this.sleep(100);
+      await OxygenUtils.sleep(100);
     }
     return null;
   },
