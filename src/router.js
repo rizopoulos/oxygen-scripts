@@ -20,14 +20,12 @@
     // { pattern: 'contacts.php',      script: 'pages/contacts.js' },
   ];
 
-  function loadScript(path) {
-    return new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = `${BASE_URL}/${path}`;
-      script.onload = resolve;
-      script.onerror = () => reject(new Error(`Failed to load ${path}`));
-      document.head.appendChild(script);
-    });
+  async function loadScript(path) {
+    const url = `${BASE_URL}/${path}`;
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`Failed to load ${path}: ${resp.status}`);
+    const code = await resp.text();
+    eval(code);
   }
 
   async function route() {
