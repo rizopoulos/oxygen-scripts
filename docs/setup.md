@@ -16,7 +16,7 @@
 3. Delete everything in the editor
 4. Copy the entire contents of `tampermonkey-loader.js` from this repo
 5. Paste it into the Tampermonkey editor
-6. **Important**: Replace `YOUR_USERNAME` in the `BASE` URL with your GitHub username
+6. **Important**: Replace `rizopoulos` in the `BASE` URL with your GitHub username
 7. Press `Ctrl+S` to save
 8. Done - never touch this again
 
@@ -24,7 +24,7 @@
 
 ```bash
 cd C:\ServBay\www\oxygen-scripts
-git remote add origin https://github.com/YOUR_USERNAME/oxygen-scripts.git
+git remote add origin https://github.com/rizopoulos/oxygen-scripts.git
 git push -u origin main
 ```
 
@@ -55,7 +55,7 @@ If you want changes to appear instantly without pushing to GitHub:
 
 **Note**: jsdelivr caches files for ~24 hours. For immediate updates, use a specific commit hash or tag:
 ```
-https://cdn.jsdelivr.net/gh/YOUR_USERNAME/oxygen-scripts@COMMIT_HASH/src/...
+https://cdn.jsdelivr.net/gh/rizopoulos/oxygen-scripts@COMMIT_HASH/src/...
 ```
 Or for development, use the local ServBay URL.
 
@@ -77,4 +77,4 @@ Or for development, use the local ServBay URL.
 
 - **Scripts not loading?** Open DevTools Console (F12), look for `[Oxygen]` messages
 - **Button not appearing?** Check if Tampermonkey is enabled (click its icon → should show the script as running)
-- **Stale scripts?** jsdelivr caches for ~24h. Use local dev mode or purge cache at `https://purge.jsdelivr.net/gh/YOUR_USERNAME/oxygen-scripts@main/src/router.js`
+- **Stale scripts?** jsdelivr caches for ~24h. Use local dev mode or purge cache at `https://purge.jsdelivr.net/gh/rizopoulos/oxygen-scripts@main/src/router.js`
