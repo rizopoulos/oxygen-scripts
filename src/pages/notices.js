@@ -8,10 +8,8 @@
 (function () {
   'use strict';
 
-  const { sleep, findVisibleLink, waitForVisibleLink, injectCSS, log, error } = OxygenUtils;
+  const { sleep, waitForVisibleLink, injectCSS, log, error } = OxygenUtils;
 
-  const DELAY_MENU = 400;
-  const DELAY_SUBMENU = 400;
   const DELAY_MODAL = 800;
 
   // Inject styles for our custom buttons
@@ -47,15 +45,10 @@
     }
   `);
 
-  // Find the ≡ menu button in a notice row
-  function findMenuButton(row) {
-    const lastCell = row.querySelector('td:last-child');
-    if (!lastCell) return null;
-    return lastCell.querySelector('[style*="cursor: pointer"]')
-      || lastCell.querySelector('span');
-  }
-
-  // Run the full conversion sequence for a specific row
+  // Run the full conversion sequence for a specific row.
+  // The row's hidden .cMenuBox contains all action links already in the DOM.
+  // We click the "Απόδειξης" link directly (data-action="notices-converte_to_invoice"),
+  // which opens the modal, then we click "Μετατροπή".
   async function convertRow(row, btn) {
     const idLink = row.querySelector('a');
     const noticeId = idLink ? idLink.textContent.trim() : 'unknown';
@@ -64,25 +57,23 @@
     btn.textContent = '...';
 
     try {
-      // Step 1: Click ≡ menu
-      const menuBtn = findMenuButton(row);
-      if (!menuBtn) throw new Error('Menu button not found');
-      menuBtn.click();
-      await sleep(DELAY_MENU);
+      // Step 1: Find the "Απόδειξης" link directly in the row's hidden menu
+      const apodeixisLink = row.querySelector('a[data-action="notices-converte_to_invoice"][data-action2="receipt"]');
+      if (!apodeixisLink) throw new Error('"Απόδειξης" link not found in row');
 
-      // Step 2: Click "Δημιουργία"
-      const dimiourgiaLink = findVisibleLink('Δημιουργία');
-      if (!dimiourgiaLink) throw new Error('"Δημιουργία" not found in dropdown');
-      dimiourgiaLink.click();
-      await sleep(DELAY_SUBMENU);
+      // Temporarily show the menu so the click handler works
+      const menuBox = row.querySelector('.cMenuBox');
+      if (menuBox) menuBox.classList.remove('hidden');
 
-      // Step 3: Click "Απόδειξης"
-      const apodeixisLink = findVisibleLink('Απόδειξης');
-      if (!apodeixisLink) throw new Error('"Απόδειξης" not found in submenu');
       apodeixisLink.click();
+      log('Clicked Απόδειξης directly');
+
+      // Re-hide the menu
+      if (menuBox) menuBox.classList.add('hidden');
+
       await sleep(DELAY_MODAL);
 
-      // Step 4: Click "Μετατροπή" in the modal
+      // Step 2: Click "Μετατροπή" in the modal
       const metatropiBtn = await waitForVisibleLink('Μετατροπή', 3000);
       if (!metatropiBtn) throw new Error('"Μετατροπή" not found in modal');
       metatropiBtn.click();
