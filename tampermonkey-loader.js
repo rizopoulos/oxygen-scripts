@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Oxygen ERP Scripts
-// @namespace    https://github.com/YOUR_USERNAME/oxygen-scripts
+// @namespace    https://github.com/rizopoulos/oxygen-scripts
 // @version      1.0
 // @description  Automates repetitive workflows in Oxygen ERP (Pelatologio.gr)
 // @match        https://app.pelatologio.gr/*
@@ -14,13 +14,13 @@
   // =========================================================================
   // CONFIGURATION - Change this after pushing to GitHub
   // =========================================================================
-  // Replace YOUR_USERNAME/oxygen-scripts with your actual GitHub path.
+  // Replace rizopoulos/oxygen-scripts with your actual GitHub path.
   // jsdelivr automatically serves files from any public GitHub repo.
   //
   // For local development, you can point this to your ServBay local URL:
   //   const BASE = 'http://oxygen-scripts.servbay.demo/src';
   //
-  const BASE = 'https://cdn.jsdelivr.net/gh/YOUR_USERNAME/oxygen-scripts@main/src';
+  const BASE = 'https://cdn.jsdelivr.net/gh/rizopoulos/oxygen-scripts@main/src';
   // =========================================================================
 
   window.OXYGEN_SCRIPTS_BASE = BASE;
