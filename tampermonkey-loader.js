@@ -47,5 +47,19 @@
     }
   }
 
-  setTimeout(init, 500);
+  // Wait for page to be ready (table rendered) before injecting
+  function waitAndInit() {
+    // If page has a table or we've waited long enough, init
+    if (document.querySelector('table') || document.readyState === 'complete') {
+      init();
+    } else {
+      setTimeout(waitAndInit, 300);
+    }
+  }
+
+  if (document.readyState === 'complete') {
+    setTimeout(init, 300);
+  } else {
+    window.addEventListener('load', function() { setTimeout(init, 300); });
+  }
 })();
