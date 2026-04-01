@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Oxygen ERP Scripts
 // @namespace    https://github.com/rizopoulos/oxygen-scripts
-// @version      1.0
+// @version      1.1
 // @description  Automates repetitive workflows in Oxygen ERP (Pelatologio.gr)
 // @match        https://app.pelatologio.gr/*
 // @grant        none
@@ -9,42 +9,43 @@
 // ==/UserScript==
 
 (function () {
-  'use strict';
+  const BASE = 'https://raw.githubusercontent.com/rizopoulos/oxygen-scripts/main/src';
 
-  // =========================================================================
-  // CONFIGURATION - Change this after pushing to GitHub
-  // =========================================================================
-  // Replace rizopoulos/oxygen-scripts with your actual GitHub path.
-  // jsdelivr automatically serves files from any public GitHub repo.
-  //
-  // For local development, you can point this to your ServBay local URL:
-  //   const BASE = 'http://oxygen-scripts.servbay.demo/src';
-  //
-  const BASE = 'https://cdn.jsdelivr.net/gh/rizopoulos/oxygen-scripts@main/src';
-  // =========================================================================
+  // Route table: URL pattern → script path
+  const routes = [
+    { pattern: 'notices.php',      script: 'pages/notices.js' },
+    { pattern: 'receipts_new.php', script: 'pages/receipt-new.js' },
+  ];
 
-  window.OXYGEN_SCRIPTS_BASE = BASE;
-
-  // Use fetch + eval to load scripts. This works with both jsdelivr
-  // (proper MIME type) and raw.githubusercontent.com (text/plain).
-  async function loadScript(path) {
-    const url = `${BASE}/${path}`;
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error(`[Oxygen] Failed to load ${path}: ${resp.status}`);
+  async function loadAndRun(path) {
+    const resp = await fetch(BASE + '/' + path);
+    if (!resp.ok) { console.error('[Oxygen] Failed to load ' + path + ': ' + resp.status); return; }
     const code = await resp.text();
-    eval(code);
+    const script = document.createElement('script');
+    script.textContent = code;
+    document.head.appendChild(script);
+    document.head.removeChild(script);
   }
 
   async function init() {
     try {
-      await loadScript('lib/utils.js');
-      await loadScript('router.js');
-      console.log('[Oxygen] Scripts loaded successfully');
+      // Load shared utils
+      await loadAndRun('lib/utils.js');
+
+      // Find matching page scripts
+      const url = window.location.href;
+      const matched = routes.filter(function(r) { return url.indexOf(r.pattern) !== -1; });
+
+      for (var i = 0; i < matched.length; i++) {
+        console.log('[Oxygen] Loading ' + matched[i].script);
+        await loadAndRun(matched[i].script);
+      }
+
+      if (matched.length > 0) console.log('[Oxygen] Ready');
     } catch (err) {
-      console.error(err.message);
+      console.error('[Oxygen] Error: ' + err.message);
     }
   }
 
-  // Wait a moment for the page to fully render, then init
   setTimeout(init, 500);
 })();
