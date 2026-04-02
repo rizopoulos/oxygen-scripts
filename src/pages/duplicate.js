@@ -174,6 +174,14 @@
       color: #815f88;
       font-size: 13px;
     }
+    .o-dup-flash {
+      background: #D35155 !important;
+      color: #fff !important;
+      transition: background 0.1s;
+    }
+    .o-dup-flash * {
+      color: #fff !important;
+    }
   `);
 
   // AJAX helper — uses jQuery if available, else XMLHttpRequest
