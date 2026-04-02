@@ -11,14 +11,7 @@
   const { sleep, injectCSS, log, warn, error } = OxygenUtils;
 
   const DELAY_BETWEEN_ROWS = 300;
-  const DELAY_DROPDOWN = 300;
-
-  // Map of displayed unit text → dropdown option text
-  const UNIT_MAP = {
-    'κιλ': 'κιλ - kg',
-    'τεμ': 'τεμ - pc',
-    'κιβ': 'κιβ - pk'
-  };
+  const DELAY_DROPDOWN = 400;
 
   injectCSS('oxygen-receipt-css', `
     .oxygen-unit-btn {
@@ -53,92 +46,57 @@
     }
   `);
 
-  // Find the products table (the one with a Μ/Μ header)
-  function getProductsTable() {
-    const tables = document.querySelectorAll('table');
-    for (const table of tables) {
-      const cells = table.querySelectorAll('th, td');
-      for (const cell of cells) {
-        if (cell.textContent.trim() === 'Μ/Μ') return table;
-      }
-    }
-    return null;
-  }
+  // DOM structure per Μ/Μ cell:
+  //   <span class="sauto" data-action="element-unitmList" data-id="1">
+  //     <span id="unitm_title1" class="sautoTitle">κιλ</span>
+  //     <div class="sdialog" style="display: none;">
+  //       <a data-action="set-unitm" data-set="κιλ">κιλ - kg</a>
+  //       <a data-action="set-unitm" data-set="τεμ">τεμ - pc</a>
+  //       ...
+  //     </div>
+  //   </span>
+  // Hidden inputs: #unitmid1 (ID), #unitm1 (text value)
 
-  // Get product rows (rows with input fields, excluding header/total)
-  function getProductRows(table) {
-    const rows = [];
-    for (const row of table.querySelectorAll('tr')) {
-      const inputs = row.querySelectorAll('input[type="text"]');
-      if (inputs.length >= 3) rows.push(row);
-    }
-    return rows;
-  }
+  // Re-select the unit for a single row by index (1-based, matches data-id)
+  async function reselectUnit(sautoSpan, index) {
+    const titleSpan = sautoSpan.querySelector('.sautoTitle');
+    if (!titleSpan) return false;
 
-  // Get the unit cell info for a product row
-  function getUnitInfo(row) {
-    for (const cell of row.querySelectorAll('td')) {
-      const span = cell.querySelector('[style*="cursor: pointer"], [style*="cursor"]');
-      if (span) {
-        const text = (span.childNodes[0]?.textContent || span.textContent).trim();
-        if (text in UNIT_MAP || text === 'Χωρίς Μ.Μ.' || text === '') {
-          return { span, currentUnit: text };
-        }
-      }
-    }
-    return null;
-  }
-
-  // Re-select the unit for a single row
-  async function reselectUnit(row, index) {
-    const info = getUnitInfo(row);
-    if (!info || !info.currentUnit || !(info.currentUnit in UNIT_MAP)) {
+    const currentUnit = titleSpan.textContent.trim();
+    if (!currentUnit || currentUnit === '---' || currentUnit === 'Χωρίς Μ.Μ.') {
       return false;
     }
 
-    const target = UNIT_MAP[info.currentUnit];
-
-    // Open dropdown
-    info.span.click();
+    // Click to open dropdown
+    sautoSpan.click();
     await sleep(DELAY_DROPDOWN);
 
-    // Find and click the matching option
-    const links = info.span.querySelectorAll('a[href="javascript:void(0);"]');
-    for (const link of links) {
-      if (link.textContent.trim().includes(target)) {
-        link.click();
-        log(`Row ${index + 1}: ${info.currentUnit} → ${target}`);
+    // Find the option matching current unit via data-set attribute
+    const option = sautoSpan.querySelector(`a[data-action="set-unitm"][data-set="${currentUnit}"]`);
+    if (option) {
+      option.click();
+      log(`Row ${index}: ${currentUnit} → re-selected`);
+      return true;
+    }
+
+    // Fallback: search by text content
+    const allOptions = sautoSpan.querySelectorAll('a[data-action="set-unitm"]');
+    for (const opt of allOptions) {
+      if (opt.textContent.includes(currentUnit)) {
+        opt.click();
+        log(`Row ${index}: ${currentUnit} → re-selected (fallback)`);
         return true;
       }
     }
 
-    // Fallback: search all visible links
-    const allLinks = document.querySelectorAll('a[href="javascript:void(0);"]');
-    for (const link of allLinks) {
-      if (link.textContent.trim().includes(target)) {
-        const rect = link.getBoundingClientRect();
-        if (rect.width > 0 && rect.height > 0) {
-          link.click();
-          log(`Row ${index + 1}: ${info.currentUnit} → ${target} (fallback)`);
-          return true;
-        }
-      }
-    }
-
-    warn(`Row ${index + 1}: could not find "${target}"`);
+    warn(`Row ${index}: could not find option for "${currentUnit}"`);
     return false;
   }
 
   async function reselectAllUnits(btn) {
-    const table = getProductsTable();
-    if (!table) {
-      error('Products table not found!');
-      return;
-    }
-
-    const rows = getProductRows(table);
-    if (rows.length === 0) {
-      warn('No product rows found');
+    const sautoSpans = document.querySelectorAll('span.sauto[data-action="element-unitmList"]');
+    if (sautoSpans.length === 0) {
+      warn('No unit dropdowns found');
       return;
     }
 
@@ -147,27 +105,25 @@
       btn.textContent = 'Working...';
     }
 
-    log(`Re-selecting units for ${rows.length} products...`);
+    log(`Re-selecting units for ${sautoSpans.length} rows...`);
     let count = 0;
 
-    for (let i = 0; i < rows.length; i++) {
-      if (await reselectUnit(rows[i], i)) count++;
+    for (let i = 0; i < sautoSpans.length; i++) {
+      if (await reselectUnit(sautoSpans[i], i + 1)) count++;
       await sleep(DELAY_BETWEEN_ROWS);
     }
 
-    log(`Done: ${count}/${rows.length} units re-selected`);
+    log(`Done: ${count}/${sautoSpans.length} units re-selected`);
 
     if (btn) {
       btn.classList.remove('running');
       btn.classList.add('done');
-      btn.textContent = `Units set (${count}/${rows.length})`;
+      btn.textContent = `Units set (${count}/${sautoSpans.length})`;
     }
   }
 
   // Inject a "Re-select Units" button near the products table header
   function injectButton() {
-    const header = document.querySelector('*');
-    // Find the "Αναλυτικές Γραμμές" section heading
     const headings = document.querySelectorAll('div, span');
     let target = null;
     for (const el of headings) {
