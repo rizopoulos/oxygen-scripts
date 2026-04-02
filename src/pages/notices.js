@@ -68,10 +68,11 @@
     btn.classList.add('running');
     btn.textContent = '...';
 
-    // POST directly via hidden form — no modal, no clicks
+    // POST directly via hidden form in a new tab — no modal, no clicks
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = 'https://app.pelatologio.gr/receipts_new.php';
+    form.target = '_blank';
     const fields = {
       notice_temp_id: tempId,
       use_template: 'yes',
