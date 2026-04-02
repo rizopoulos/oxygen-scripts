@@ -68,8 +68,11 @@
     btn.classList.add('running');
     btn.textContent = '...';
 
-    // Navigate directly — no modal, no clicks
-    const params = new URLSearchParams({
+    // POST directly via hidden form — no modal, no clicks
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'https://app.pelatologio.gr/receipts_new.php';
+    const fields = {
       notice_temp_id: tempId,
       use_template: 'yes',
       same_products: 'yes',
@@ -77,8 +80,16 @@
       same_category: 'yes',
       same_rules: 'yes',
       mark_notice_complete: 'yes',
-    });
-    window.location.href = `https://app.pelatologio.gr/receipts_new.php?${params}`;
+    };
+    for (const [name, value] of Object.entries(fields)) {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      input.value = value;
+      form.appendChild(input);
+    }
+    document.body.appendChild(form);
+    form.submit();
   }
 
   // Inject buttons into each notice row
