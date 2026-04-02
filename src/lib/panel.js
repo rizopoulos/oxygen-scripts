@@ -71,9 +71,12 @@
     }
     #oxygen-panel .o-btn-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 6px;
       width: 100%;
+    }
+    #oxygen-panel .o-btn-grid.two-col {
+      grid-template-columns: 1fr 1fr;
     }
     #oxygen-panel.collapsed .o-btn-grid {
       grid-template-columns: 1fr;
