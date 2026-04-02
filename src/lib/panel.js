@@ -18,7 +18,7 @@
       top: 80px;
       right: 0;
       z-index: 99999;
-      width: 230px;
+      width: auto;
       background: #D35155;
       border-radius: 4px 0 0 4px;
       box-shadow: -4px 0 20px rgba(211,81,85,0.25);
