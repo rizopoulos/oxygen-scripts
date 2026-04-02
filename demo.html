@@ -13,6 +13,7 @@
     --purple: #815f88;
     --black: #000;
     --white: #fff;
+    --radius: 4px;
     --font: 'DM Sans', sans-serif;
     --mono: 'JetBrains Mono', monospace;
   }
@@ -28,47 +29,39 @@
   /* ─── HEADER BAR ─── */
   .top-bar {
     background: var(--black);
-    padding: 16px 40px;
+    padding: 14px 40px;
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
-  .top-bar-left {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-  .logo {
+  .top-bar-left { display: flex; align-items: center; gap: 14px; }
+  .site-logo {
     font-family: var(--mono);
     font-weight: 800;
-    font-size: 20px;
+    font-size: 18px;
     color: var(--white);
     letter-spacing: 2px;
   }
-  .logo .accent { color: var(--red); }
-  .version-pill {
+  .site-logo .accent { color: var(--red); }
+  .vpill {
     font-family: var(--mono);
     font-size: 10px;
     padding: 3px 10px;
     background: var(--purple);
     color: var(--white);
-    border-radius: 100px;
+    border-radius: var(--radius);
     letter-spacing: 1px;
   }
-  .top-bar-right {
-    display: flex;
-    gap: 6px;
-  }
-  .palette-dot {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
+  .top-bar-right { display: flex; gap: 5px; }
+  .pdot {
+    width: 16px; height: 16px;
+    border-radius: var(--radius);
     border: 2px solid rgba(255,255,255,0.15);
   }
 
-  /* ─── SECTION LAYOUT ─── */
+  /* ─── SECTIONS ─── */
   .section {
-    padding: 48px 40px;
+    padding: 44px 40px;
     border-bottom: 1px solid #eee;
   }
   .section-label {
@@ -80,46 +73,37 @@
     margin-bottom: 6px;
   }
   .section-title {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 800;
     letter-spacing: -1px;
-    margin-bottom: 8px;
-    color: var(--black);
+    margin-bottom: 6px;
   }
   .section-desc {
     color: var(--purple);
-    font-size: 14px;
-    margin-bottom: 28px;
-    max-width: 560px;
+    font-size: 13px;
+    margin-bottom: 24px;
+    max-width: 520px;
     line-height: 1.6;
   }
 
-  /* ─── DEMO STAGE (simulates ERP page) ─── */
+  /* ─── STAGE ─── */
   .stage {
     background: #f7f5f8;
-    border-radius: 14px;
-    padding: 32px;
+    border-radius: var(--radius);
+    padding: 28px;
     position: relative;
-    min-height: 280px;
+    min-height: 260px;
     border: 1px solid #ece8ed;
-  }
-  .stage-dark {
-    background: #f0edf1;
   }
 
   /* ─── TABS ─── */
-  .tabs {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 20px;
-  }
+  .tabs { display: flex; gap: 4px; margin-bottom: 18px; }
   .tab {
-    padding: 7px 16px;
-    border-radius: 8px;
+    padding: 6px 14px;
+    border-radius: var(--radius);
     cursor: pointer;
     font-size: 12px;
     font-weight: 700;
-    letter-spacing: 0.3px;
     transition: all 0.15s;
     background: transparent;
     color: var(--purple);
@@ -136,100 +120,87 @@
      ════════════════════════════════════════════ */
   #demo-panel {
     position: absolute;
-    top: 24px;
+    top: 20px;
     right: 0;
-    width: 210px;
-    background: var(--black);
-    border-radius: 14px 0 0 14px;
-    box-shadow: -4px 0 24px rgba(0,0,0,0.15);
-    padding: 14px;
+    width: 230px;
+    background: var(--red);
+    border-radius: var(--radius) 0 0 var(--radius);
+    box-shadow: -4px 0 20px rgba(211,81,85,0.25);
+    padding: 12px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 7px;
+    gap: 8px;
     transition: width 0.3s cubic-bezier(0.4,0,0.2,1), padding 0.3s ease;
     overflow: hidden;
     z-index: 10;
   }
   #demo-panel.collapsed {
     width: 48px;
-    padding: 14px 6px;
+    padding: 12px 6px;
   }
 
   .dp-header {
     display: flex;
     align-items: center;
-    justify-content: center;
     width: 100%;
     cursor: pointer;
     user-select: none;
     gap: 8px;
-    padding-bottom: 10px;
-    margin-bottom: 3px;
-    position: relative;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    margin-bottom: 2px;
   }
-  .dp-header::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 10%;
-    width: 80%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--purple), transparent);
-    opacity: 0.4;
-  }
-  .dp-logo {
-    color: var(--red);
-    font-size: 15px;
-    font-weight: 800;
-    font-family: var(--mono);
-    letter-spacing: 2px;
+  .dp-logo-img {
+    height: 20px;
+    opacity: 0.95;
+    flex-shrink: 0;
   }
   .dp-ver {
     font-family: var(--mono);
-    color: var(--purple);
+    color: var(--white);
     font-size: 9px;
-    opacity: 0.6;
+    opacity: 0.7;
+    margin-left: auto;
   }
   #demo-panel.collapsed .dp-ver { display: none; }
-  #demo-panel.collapsed .dp-header::after { display: none; }
+  #demo-panel.collapsed .dp-logo-img { height: 16px; }
+  #demo-panel.collapsed .dp-header { border-bottom: none; padding-bottom: 4px; justify-content: center; }
+
+  .dp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    width: 100%;
+  }
+  #demo-panel.collapsed .dp-grid {
+    grid-template-columns: 1fr;
+  }
 
   .dp-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    gap: 5px;
     height: 36px;
     border: none;
-    background: var(--purple);
+    background: var(--black);
     color: var(--white);
-    border-radius: 9px;
+    border-radius: var(--radius);
     cursor: pointer;
     font-family: var(--font);
-    font-size: 11.5px;
+    font-size: 11px;
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
-    transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
-    padding: 0 10px;
-    position: relative;
-  }
-  .dp-btn::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 50%;
-    background: linear-gradient(180deg, rgba(255,255,255,0.08), transparent);
-    border-radius: 9px 9px 0 0;
-    pointer-events: none;
+    transition: all 0.15s ease;
+    padding: 0 8px;
   }
   .dp-btn:hover {
-    background: var(--red);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(211,81,85,0.25);
+    background: var(--white);
+    color: var(--black);
   }
-  .dp-btn:active { transform: translateY(0); box-shadow: none; }
-  .dp-btn.active { background: var(--green); }
+  .dp-btn:active { transform: scale(0.96); }
+  .dp-btn.active { background: var(--green); color: var(--white); }
   .dp-btn.running {
     opacity: 0.5;
     pointer-events: none;
@@ -239,10 +210,10 @@
     0%,100% { opacity: 0.5; }
     50% { opacity: 0.8; }
   }
-  .dp-btn .dp-icon { font-size: 14px; width: 20px; text-align: center; flex-shrink: 0; }
-  .dp-btn .dp-label { margin-left: 7px; }
+  .dp-btn .dp-icon { font-size: 13px; flex-shrink: 0; }
+  .dp-btn .dp-label {}
   #demo-panel.collapsed .dp-btn .dp-label { display: none; }
-  #demo-panel.collapsed .dp-btn { height: 32px; border-radius: 7px; }
+  #demo-panel.collapsed .dp-btn { height: 32px; }
 
   /* ════════════════════════════════════════════
      COMPONENT: NOTICE ROW BUTTONS
@@ -253,13 +224,13 @@
     border-spacing: 0;
     font-size: 13px;
     background: var(--white);
-    border-radius: 10px;
+    border-radius: var(--radius);
     overflow: hidden;
     box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   }
   .demo-table th {
     text-align: left;
-    padding: 12px 16px;
+    padding: 10px 14px;
     color: var(--purple);
     font-size: 10px;
     font-weight: 700;
@@ -269,7 +240,7 @@
     border-bottom: 2px solid #f0ecf1;
   }
   .demo-table td {
-    padding: 14px 16px;
+    padding: 12px 14px;
     border-bottom: 1px solid #f5f2f6;
     vertical-align: middle;
   }
@@ -277,11 +248,7 @@
   .demo-table tbody tr:hover { background: #fdfcfd; }
   .demo-table tbody tr:last-child td { border-bottom: none; }
 
-  .notice-id {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--purple);
-  }
+  .notice-id { font-family: var(--mono); font-size: 11px; color: var(--purple); }
   .notice-name { font-weight: 700; }
   .notice-desc { color: var(--purple); }
   .notice-amount {
@@ -296,60 +263,46 @@
     align-items: center;
     justify-content: center;
     width: 32px;
-    height: 28px;
+    height: 26px;
     border: none;
     color: var(--white);
-    border-radius: 7px;
+    border-radius: var(--radius);
     cursor: pointer;
     font-size: 10px;
     font-weight: 800;
-    margin-right: 4px;
-    transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+    margin-right: 3px;
+    transition: all 0.15s ease;
     letter-spacing: 0.5px;
-    position: relative;
-  }
-  .row-btn::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 50%;
-    background: linear-gradient(180deg, rgba(255,255,255,0.12), transparent);
-    border-radius: 7px 7px 0 0;
-    pointer-events: none;
   }
   .row-btn.btn-ap { background: var(--red); }
   .row-btn.btn-tim { background: var(--green); }
   .row-btn:hover {
-    transform: translateY(-2px) scale(1.08);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
   }
   .row-btn:active { transform: scale(0.95); }
 
   /* ════════════════════════════════════════════
      COMPONENT: DUPLICATE DIALOG
      ════════════════════════════════════════════ */
-  .dup-wrap {
-    display: flex;
-    justify-content: center;
-    padding: 10px 0;
-  }
+  .dup-wrap { display: flex; justify-content: center; padding: 10px 0; }
   .dup-dialog {
     background: var(--white);
-    border-radius: 16px;
-    width: 460px;
+    border-radius: var(--radius);
+    width: 440px;
     overflow: hidden;
-    box-shadow: 0 16px 48px rgba(0,0,0,0.12), 0 0 0 1px rgba(129,95,136,0.08);
-    animation: dialogIn 0.4s cubic-bezier(0.16,1,0.3,1);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(129,95,136,0.08);
+    animation: dialogIn 0.35s cubic-bezier(0.16,1,0.3,1);
   }
   @keyframes dialogIn {
-    from { opacity: 0; transform: translateY(16px) scale(0.98); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .dup-header {
     background: var(--black);
     color: var(--white);
-    padding: 16px 20px;
+    padding: 14px 18px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -357,36 +310,33 @@
   .dup-header-left {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 13px;
   }
   .dup-header-dot {
-    width: 10px;
-    height: 10px;
+    width: 8px; height: 8px;
     border-radius: 50%;
     background: var(--red);
   }
   .dup-close {
-    width: 30px;
-    height: 30px;
+    width: 28px; height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
+    border-radius: var(--radius);
     cursor: pointer;
     color: var(--purple);
-    font-size: 18px;
+    font-size: 16px;
     transition: all 0.15s;
   }
   .dup-close:hover { background: var(--red); color: var(--white); }
 
-  .dup-body { padding: 18px 20px; }
-
-  .dup-input-wrap { position: relative; margin-bottom: 14px; }
+  .dup-body { padding: 16px 18px; }
+  .dup-input-wrap { position: relative; margin-bottom: 12px; }
   .dup-search-icon {
     position: absolute;
-    left: 14px;
+    left: 12px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--purple);
@@ -395,11 +345,11 @@
   }
   .dup-input {
     width: 100%;
-    padding: 12px 12px 12px 38px;
+    padding: 11px 12px 11px 36px;
     border: 2px solid #e8e0eb;
-    border-radius: 10px;
+    border-radius: var(--radius);
     font-family: var(--font);
-    font-size: 14px;
+    font-size: 13px;
     outline: none;
     color: var(--black);
     transition: border-color 0.2s;
@@ -408,42 +358,39 @@
   .dup-input:focus { border-color: var(--red); }
   .dup-input::placeholder { color: #bdb0c2; }
 
-  /* Customer list */
   .dup-customer {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px;
-    border-radius: 10px;
+    gap: 10px;
+    padding: 10px;
+    border-radius: var(--radius);
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all 0.12s;
     margin-bottom: 2px;
   }
   .dup-customer:hover { background: #f8f5f9; }
   .dup-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
+    width: 34px; height: 34px;
+    border-radius: var(--radius);
     background: var(--purple);
     color: var(--white);
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    font-size: 13px;
+    font-size: 12px;
     flex-shrink: 0;
   }
-  .dup-cust-name { font-weight: 700; font-size: 14px; }
+  .dup-cust-name { font-weight: 700; font-size: 13px; }
   .dup-cust-code { font-family: var(--mono); font-size: 10px; color: var(--purple); margin-top: 1px; }
   .dup-cust-arrow {
     margin-left: auto;
     color: var(--purple);
-    font-size: 18px;
-    transition: all 0.2s;
+    font-size: 16px;
+    transition: all 0.15s;
   }
   .dup-customer:hover .dup-cust-arrow { transform: translateX(3px); color: var(--red); }
 
-  /* Invoice list */
   .dup-back-link {
     display: inline-flex;
     align-items: center;
@@ -457,31 +404,31 @@
   }
   .dup-back-link:hover { color: var(--red); }
   .dup-cust-heading {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 800;
-    letter-spacing: -0.5px;
-    margin-bottom: 14px;
+    letter-spacing: -0.3px;
+    margin-bottom: 12px;
   }
   .dup-invoice {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 13px 14px;
-    border-radius: 10px;
+    padding: 12px;
+    border-radius: var(--radius);
     border: 1px solid #f0ecf1;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.15s;
   }
   .dup-invoice:hover {
     border-color: var(--purple);
     background: #fdfafe;
-    transform: translateX(4px);
+    transform: translateX(3px);
   }
   .dup-inv-left { display: flex; align-items: center; gap: 10px; }
   .dup-badge {
-    padding: 3px 8px;
-    border-radius: 6px;
+    padding: 3px 7px;
+    border-radius: var(--radius);
     font-size: 10px;
     font-weight: 800;
     color: var(--white);
@@ -494,28 +441,24 @@
   .dup-inv-amount {
     font-family: var(--mono);
     font-weight: 700;
-    font-size: 15px;
+    font-size: 14px;
     color: var(--green);
   }
 
-  /* ─── ANIMATIONS ─── */
-  .stagger > * {
-    opacity: 0;
-    animation: fadeUp 0.35s ease forwards;
-  }
+  /* ─── STAGGER ANIMATION ─── */
+  .stagger > * { opacity: 0; animation: fadeUp 0.3s ease forwards; }
   .stagger > *:nth-child(1) { animation-delay: 0s; }
   .stagger > *:nth-child(2) { animation-delay: 0.04s; }
   .stagger > *:nth-child(3) { animation-delay: 0.08s; }
   .stagger > *:nth-child(4) { animation-delay: 0.12s; }
   .stagger > *:nth-child(5) { animation-delay: 0.16s; }
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* ─── FOOTER ─── */
   .footer {
-    padding: 32px 40px;
+    padding: 28px 40px;
     display: flex;
     justify-content: space-between;
     color: var(--purple);
@@ -525,18 +468,17 @@
 </head>
 <body>
 
-<!-- TOP BAR -->
 <div class="top-bar">
   <div class="top-bar-left">
-    <span class="logo"><span class="accent">O</span><sub style="font-size:0.55em;color:var(--purple)">2</sub> Oxygen Scripts</span>
-    <span class="version-pill">v2.0.0</span>
+    <span class="site-logo"><span class="accent">O</span><sub style="font-size:0.55em;color:var(--purple)">2</sub> Oxygen Scripts</span>
+    <span class="vpill">v2.0.0</span>
   </div>
   <div class="top-bar-right">
-    <div class="palette-dot" style="background:var(--red)"></div>
-    <div class="palette-dot" style="background:var(--green)"></div>
-    <div class="palette-dot" style="background:var(--purple)"></div>
-    <div class="palette-dot" style="background:var(--black)"></div>
-    <div class="palette-dot" style="background:var(--white)"></div>
+    <div class="pdot" style="background:var(--red)"></div>
+    <div class="pdot" style="background:var(--green)"></div>
+    <div class="pdot" style="background:var(--purple)"></div>
+    <div class="pdot" style="background:var(--black)"></div>
+    <div class="pdot" style="background:var(--white)"></div>
   </div>
 </div>
 
@@ -544,7 +486,7 @@
 <div class="section">
   <div class="section-label">01 — Floating Panel</div>
   <h2 class="section-title">Side Panel</h2>
-  <p class="section-desc">Docked right. Click header to collapse. Actions register per page. Dark on light for max contrast.</p>
+  <p class="section-desc">Red panel docked right. 2-column button grid. Click header to collapse.</p>
 
   <div class="tabs" id="panel-tabs">
     <button class="tab active" onclick="panelState('open',this)">Open</button>
@@ -553,17 +495,19 @@
     <button class="tab" onclick="panelState('running',this)">Running</button>
   </div>
 
-  <div class="stage" style="min-height:300px">
+  <div class="stage" style="min-height:280px">
     <div style="color:var(--purple);font-size:12px;opacity:0.4">Simulated ERP page</div>
     <div id="demo-panel">
       <div class="dp-header" onclick="document.getElementById('demo-panel').classList.toggle('collapsed')">
-        <span class="dp-logo">O<sub style="font-size:0.6em">2</sub></span>
+        <img class="dp-logo-img" src="https://cdn.rizopouloscoffee.gr/www/logos/rizopoulos--white.png" alt="Logo">
         <span class="dp-ver">v2.0.0</span>
       </div>
-      <div class="dp-btn" id="dp0"><span class="dp-icon">&#9878;</span><span class="dp-label">Re-select Units</span></div>
-      <div class="dp-btn" id="dp1"><span class="dp-icon">&#128179;</span><span class="dp-label">Κάρτα</span></div>
-      <div class="dp-btn" id="dp2"><span class="dp-icon">&#128230;</span><span class="dp-label">Αντικαταβολή</span></div>
-      <div class="dp-btn" id="dp3"><span class="dp-icon">&#128203;</span><span class="dp-label">Αντιγραφή</span></div>
+      <div class="dp-grid">
+        <div class="dp-btn" id="dp0"><span class="dp-icon">&#9878;</span><span class="dp-label">Units</span></div>
+        <div class="dp-btn" id="dp1"><span class="dp-icon">&#128179;</span><span class="dp-label">Karta</span></div>
+        <div class="dp-btn" id="dp2"><span class="dp-icon">&#128230;</span><span class="dp-label">COD</span></div>
+        <div class="dp-btn" id="dp3"><span class="dp-icon">&#128203;</span><span class="dp-label">Copy</span></div>
+      </div>
     </div>
   </div>
 </div>
@@ -572,13 +516,13 @@
 <div class="section">
   <div class="section-label">02 — Notice Actions</div>
   <h2 class="section-title">Row Buttons</h2>
-  <p class="section-desc">ΑΠ = receipt (red), ΤΙΜ = invoice (green). One click opens new tab.</p>
+  <p class="section-desc">ΑΠ = receipt (red), ΤΙΜ = invoice (green). One click, new tab.</p>
 
   <div class="stage">
     <table class="demo-table">
       <thead>
         <tr>
-          <th style="width:90px"></th>
+          <th style="width:80px"></th>
           <th>No</th>
           <th>Customer</th>
           <th>Products</th>
@@ -630,15 +574,14 @@
 <div class="section">
   <div class="section-label">03 — Duplicate Document</div>
   <h2 class="section-title">Search &amp; Duplicate</h2>
-  <p class="section-desc">Search customer, pick last invoice/receipt, duplicate in one click. Replaces 8 UI clicks with 3.</p>
+  <p class="section-desc">Search customer, pick last invoice/receipt, duplicate in one click.</p>
 
   <div class="tabs" id="dup-tabs">
     <button class="tab active" onclick="dupState('search',this)">Customer Search</button>
     <button class="tab" onclick="dupState('invoices',this)">Invoice List</button>
   </div>
 
-  <div class="stage stage-dark">
-    <!-- Search state -->
+  <div class="stage" style="background:#f0edf1">
     <div id="pane-search" class="pane active">
       <div class="dup-wrap">
         <div class="dup-dialog">
@@ -654,26 +597,17 @@
             <div class="stagger">
               <div class="dup-customer">
                 <div class="dup-avatar">ΓΞ</div>
-                <div>
-                  <div class="dup-cust-name">Georgia Xyntara</div>
-                  <div class="dup-cust-code">30.00000035</div>
-                </div>
+                <div><div class="dup-cust-name">Georgia Xyntara</div><div class="dup-cust-code">30.00000035</div></div>
                 <span class="dup-cust-arrow">&#8250;</span>
               </div>
               <div class="dup-customer">
                 <div class="dup-avatar" style="background:var(--green)">ΝΓ</div>
-                <div>
-                  <div class="dup-cust-name">Nikolaos Georgiadis</div>
-                  <div class="dup-cust-code">50.0002</div>
-                </div>
+                <div><div class="dup-cust-name">Nikolaos Georgiadis</div><div class="dup-cust-code">50.0002</div></div>
                 <span class="dup-cust-arrow">&#8250;</span>
               </div>
               <div class="dup-customer">
                 <div class="dup-avatar" style="background:var(--red)">ΜΠ</div>
-                <div>
-                  <div class="dup-cust-name">Maria Petropoulou</div>
-                  <div class="dup-cust-code">30.00000014</div>
-                </div>
+                <div><div class="dup-cust-name">Maria Petropoulou</div><div class="dup-cust-code">30.00000014</div></div>
                 <span class="dup-cust-arrow">&#8250;</span>
               </div>
             </div>
@@ -682,7 +616,6 @@
       </div>
     </div>
 
-    <!-- Invoice list state -->
     <div id="pane-invoices" class="pane">
       <div class="dup-wrap">
         <div class="dup-dialog">
@@ -697,40 +630,28 @@
               <div class="dup-invoice">
                 <div class="dup-inv-left">
                   <span class="dup-badge receipt">AΛΠ</span>
-                  <div>
-                    <div class="dup-inv-no">No <strong>3011</strong></div>
-                    <div class="dup-inv-date">28/12/2025</div>
-                  </div>
+                  <div><div class="dup-inv-no">No <strong>3011</strong></div><div class="dup-inv-date">28/12/2025</div></div>
                 </div>
                 <div class="dup-inv-amount">&euro; 35.12</div>
               </div>
               <div class="dup-invoice">
                 <div class="dup-inv-left">
                   <span class="dup-badge receipt">AΛΠ</span>
-                  <div>
-                    <div class="dup-inv-no">No <strong>3001</strong></div>
-                    <div class="dup-inv-date">26/12/2025</div>
-                  </div>
+                  <div><div class="dup-inv-no">No <strong>3001</strong></div><div class="dup-inv-date">26/12/2025</div></div>
                 </div>
                 <div class="dup-inv-amount">&euro; 43.90</div>
               </div>
               <div class="dup-invoice">
                 <div class="dup-inv-left">
                   <span class="dup-badge invoice">ΤΙΜ</span>
-                  <div>
-                    <div class="dup-inv-no">No <strong>2405</strong></div>
-                    <div class="dup-inv-date">29/10/2025</div>
-                  </div>
+                  <div><div class="dup-inv-no">No <strong>2405</strong></div><div class="dup-inv-date">29/10/2025</div></div>
                 </div>
                 <div class="dup-inv-amount">&euro; 31.20</div>
               </div>
               <div class="dup-invoice">
                 <div class="dup-inv-left">
                   <span class="dup-badge receipt">AΛΠ</span>
-                  <div>
-                    <div class="dup-inv-no">No <strong>2082</strong></div>
-                    <div class="dup-inv-date">19/09/2025</div>
-                  </div>
+                  <div><div class="dup-inv-no">No <strong>2082</strong></div><div class="dup-inv-date">19/09/2025</div></div>
                 </div>
                 <div class="dup-inv-amount">&euro; 30.99</div>
               </div>
@@ -742,39 +663,34 @@
   </div>
 </div>
 
-<!-- FOOTER -->
 <div class="footer">
   <span>Oxygen Scripts — Built for Rizopoulos Coffee 1901</span>
   <span style="font-family:var(--mono);font-size:10px">v2.0.0</span>
 </div>
 
 <script>
-function panelState(state, el) {
+function panelState(s,el){
   document.querySelectorAll('#panel-tabs .tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
-  const p = document.getElementById('demo-panel');
-  const btns = p.querySelectorAll('.dp-btn');
+  const p=document.getElementById('demo-panel'), btns=p.querySelectorAll('.dp-btn');
   p.classList.remove('collapsed');
   btns.forEach(b=>b.classList.remove('active','running'));
-  if (state==='collapsed') p.classList.add('collapsed');
-  if (state==='active') btns[0].classList.add('active');
-  if (state==='running') btns[1].classList.add('running');
+  if(s==='collapsed') p.classList.add('collapsed');
+  if(s==='active') btns[0].classList.add('active');
+  if(s==='running') btns[1].classList.add('running');
 }
-
-function dupState(state, el) {
+function dupState(s,el){
   document.querySelectorAll('#dup-tabs .tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('pane-search').classList.remove('active');
   document.getElementById('pane-invoices').classList.remove('active');
-  document.getElementById('pane-'+(state==='search'?'search':'invoices')).classList.add('active');
+  document.getElementById('pane-'+(s==='search'?'search':'invoices')).classList.add('active');
 }
-
 document.querySelectorAll('.row-btn').forEach(b=>{
   b.addEventListener('click',()=>{
-    const orig = b.textContent;
-    b.style.background='var(--purple)';
-    b.textContent='...';
-    setTimeout(()=>{ b.style.background=''; b.textContent=orig; },700);
+    const orig=b.textContent;
+    b.style.background='var(--purple)'; b.textContent='...';
+    setTimeout(()=>{b.style.background='';b.textContent=orig;},600);
   });
 });
 </script>
