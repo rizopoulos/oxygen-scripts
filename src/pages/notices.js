@@ -43,35 +43,33 @@
     }
   `);
 
-  // Convert a notice to receipt by navigating directly to the receipt URL.
-  // The notice's data-docid attribute holds the notice_temp_id needed for the URL.
-  function convertRow(row, btn) {
+  // Get the notice_temp_id from a row's conversion link
+  function getTempId(row) {
+    const link = row.querySelector('a[data-action="notices-converte_to_invoice"]');
+    return link ? link.getAttribute('data-docid') : null;
+  }
+
+  // POST to create a receipt or invoice from a notice in a new tab
+  // action: 'receipts_new.php' for receipt, 'invoices_new.php' for invoice
+  function convertRow(row, btn, targetPage) {
     const idLink = row.querySelector('a');
     const noticeId = idLink ? idLink.textContent.trim() : 'unknown';
+    const tempId = getTempId(row);
 
-    // Get the notice_temp_id from the Απόδειξης link's data-docid attribute
-    const apodeixisLink = row.querySelector('a[data-action="notices-converte_to_invoice"][data-action2="receipt"]');
-    if (!apodeixisLink) {
-      error(`${noticeId}: "Απόδειξης" link not found in row`);
-      alert('Conversion failed: link not found in row');
-      return;
-    }
-
-    const tempId = apodeixisLink.getAttribute('data-docid');
     if (!tempId) {
       error(`${noticeId}: no data-docid found`);
       alert('Conversion failed: no document ID found');
       return;
     }
 
-    log(`Converting ${noticeId} (temp_id=${tempId}) to receipt...`);
+    log(`Converting ${noticeId} (temp_id=${tempId}) → ${targetPage}...`);
     btn.classList.add('running');
     btn.textContent = '...';
 
-    // POST directly via hidden form in a new tab — no modal, no clicks
+    // POST directly via hidden form in a new tab
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = 'https://app.pelatologio.gr/receipts_new.php';
+    form.action = 'https://app.pelatologio.gr/' + targetPage;
     form.target = '_blank';
     const fields = {
       notice_temp_id: tempId,
