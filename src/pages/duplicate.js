@@ -130,23 +130,20 @@
   }
 
   // Parse search results HTML into customer objects
+  // HTML structure repeats: .col80 (name) → .col10 (notes) → .col10 (invoices btn with docid)
   function parseCustomers(html) {
     const div = document.createElement('div');
     div.innerHTML = html;
-    // Contact IDs are on the "recent invoices" buttons
-    const btns = div.querySelectorAll('[data-action="fasts-show_recent_invoices"]');
     const customers = [];
-    for (const btn of btns) {
-      const contactId = btn.getAttribute('data-docid');
-      // The customer name/code is in the .hSearchLine[data-link] before this button
-      // Walk backwards through siblings to find the col80 with the name
-      const container = btn.closest('[style*="max-height"]') || div;
-      const nameRow = container.querySelector(`.hSearchLine[data-link] ~ .col10 #btnstmp_${contactId}`)?.closest('.col10')?.previousElementSibling?.previousElementSibling?.querySelector('.hSearchLine')
-        || container.querySelector(`#btnstmpnotes_${contactId}`)?.closest('.col10')?.previousElementSibling?.querySelector('.hSearchLine');
-      if (!nameRow) continue;
-      const code = nameRow.querySelector('span')?.textContent?.trim() || '';
-      const name = nameRow.textContent.replace(code, '').trim();
-      customers.push({ name, code, contactId });
+    const nameRows = div.querySelectorAll('.hSearchLine[data-link]');
+    for (const row of nameRows) {
+      const code = row.querySelector('span')?.textContent?.trim() || '';
+      const name = row.textContent.replace(code, '').trim();
+      // The contact ID is in the btnstmpnotes or btnstmp nearby — use regex on raw HTML
+      const linkHref = row.getAttribute('data-link') || '';
+      const idMatch = linkHref.match(/[&?]i=(\d+)/);
+      const contactId = idMatch?.[1] || '';
+      if (contactId) customers.push({ name, code, contactId });
     }
     return customers;
   }
