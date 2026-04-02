@@ -18,21 +18,22 @@
       top: 80px;
       right: 0;
       z-index: 99999;
-      width: 180px;
+      width: 200px;
       background: #000;
-      border-radius: 8px 0 0 8px;
-      box-shadow: -2px 2px 10px rgba(0,0,0,0.3);
-      padding: 8px 10px;
+      border-radius: 12px 0 0 12px;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.4);
+      padding: 12px 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
-      transition: width 0.2s, padding 0.2s;
+      gap: 8px;
+      transition: width 0.25s ease, padding 0.25s ease, opacity 0.25s ease;
       overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
     #oxygen-panel.collapsed {
-      width: 44px;
-      padding: 8px 6px;
+      width: 40px;
+      padding: 12px 4px;
     }
     #oxygen-panel .o-panel-header {
       display: flex;
@@ -41,67 +42,84 @@
       width: 100%;
       cursor: pointer;
       user-select: none;
-      gap: 6px;
+      gap: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #815f88;
       margin-bottom: 2px;
     }
     #oxygen-panel .o-panel-title {
       color: #D35155;
-      font-size: 12px;
-      font-weight: bold;
+      font-size: 14px;
+      font-weight: 800;
       white-space: nowrap;
+      letter-spacing: 1px;
     }
     #oxygen-panel .o-panel-version {
       color: #815f88;
       font-size: 9px;
       white-space: nowrap;
+      opacity: 0.8;
     }
     #oxygen-panel.collapsed .o-panel-version {
       display: none;
+    }
+    #oxygen-panel.collapsed .o-panel-header {
+      border-bottom: none;
+      padding-bottom: 4px;
     }
     #oxygen-panel .o-btn {
       display: flex;
       align-items: center;
       justify-content: center;
       width: 100%;
-      min-height: 30px;
-      border: 1px solid #fff;
+      min-height: 34px;
+      border: none;
       background: #815f88;
       color: #fff;
-      border-radius: 4px;
+      border-radius: 8px;
       cursor: pointer;
       font-size: 11px;
-      font-weight: bold;
+      font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
-      transition: all 0.15s;
-      padding: 4px;
+      transition: background 0.15s ease, transform 0.1s ease;
+      padding: 6px 8px;
+      letter-spacing: 0.3px;
     }
     #oxygen-panel .o-btn:hover {
       background: #D35155;
-      border-color: #fff;
-      color: #fff;
+      transform: scale(1.03);
+    }
+    #oxygen-panel .o-btn:active {
+      transform: scale(0.97);
     }
     #oxygen-panel .o-btn.active {
       background: #008582;
-      border-color: #008582;
-      color: #fff;
     }
     #oxygen-panel .o-btn.running {
       background: #815f88;
-      border-color: #815f88;
-      color: #fff;
-      opacity: 0.7;
+      opacity: 0.6;
       pointer-events: none;
+      animation: oxygen-pulse 1.2s ease-in-out infinite;
+    }
+    @keyframes oxygen-pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 0.9; }
     }
     #oxygen-panel .o-btn .o-icon {
-      font-size: 16px;
+      font-size: 15px;
       flex-shrink: 0;
     }
     #oxygen-panel .o-btn .o-label {
-      margin-left: 6px;
+      margin-left: 8px;
     }
     #oxygen-panel.collapsed .o-btn .o-label {
       display: none;
+    }
+    #oxygen-panel.collapsed .o-btn {
+      border-radius: 6px;
+      min-height: 30px;
+      padding: 4px;
     }
   `);
 
