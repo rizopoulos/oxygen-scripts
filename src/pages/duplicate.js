@@ -300,6 +300,21 @@
       searchTimeout = setTimeout(() => searchCustomers(term, results), 300);
     });
 
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        // Click the first result item (customer or invoice)
+        const firstItem = results.querySelector('.o-dup-item, .o-dup-inv-item');
+        if (firstItem) {
+          firstItem.classList.add('o-dup-flash');
+          setTimeout(() => firstItem.click(), 150);
+        }
+      }
+      if (e.key === 'Escape') {
+        closeDialog();
+      }
+    });
+
     input.focus();
   }
 
