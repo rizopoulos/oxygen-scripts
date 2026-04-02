@@ -107,17 +107,35 @@
       if (row.querySelector('.oxygen-btn')) continue;
 
       const cell = checkbox.closest('td');
-      const btn = document.createElement('span');
-      btn.className = 'oxygen-btn';
-      btn.title = 'Μετατροπή σε Απόδειξη (Oxygen Script)';
-      btn.textContent = 'ΑΠ';
-      btn.addEventListener('click', (e) => {
+
+      // ΑΠ = Απόδειξη (receipt)
+      const btnAP = document.createElement('span');
+      btnAP.className = 'oxygen-btn';
+      btnAP.title = 'Μετατροπή σε Απόδειξη';
+      btnAP.textContent = 'ΑΠ';
+      btnAP.addEventListener('click', (e) => {
         e.stopPropagation();
         e.preventDefault();
-        convertRow(row, btn);
+        convertRow(row, btnAP, 'receipts_new.php');
       });
 
-      cell.insertBefore(btn, checkbox);
+      // ΤΙΜ = Τιμολόγιο (invoice)
+      const btnTIM = document.createElement('span');
+      btnTIM.className = 'oxygen-btn';
+      btnTIM.title = 'Μετατροπή σε Τιμολόγιο';
+      btnTIM.textContent = 'ΤΙΜ';
+      btnTIM.style.borderColor = '#008582';
+      btnTIM.style.color = '#008582';
+      btnTIM.addEventListener('mouseenter', () => { btnTIM.style.background = '#008582'; btnTIM.style.color = '#fff'; });
+      btnTIM.addEventListener('mouseleave', () => { btnTIM.style.background = '#fff'; btnTIM.style.color = '#008582'; });
+      btnTIM.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        convertRow(row, btnTIM, 'invoices_new.php');
+      });
+
+      cell.insertBefore(btnTIM, checkbox);
+      cell.insertBefore(btnAP, btnTIM);
       injected++;
     }
 
