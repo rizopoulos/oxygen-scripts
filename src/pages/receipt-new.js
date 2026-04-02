@@ -151,6 +151,37 @@
     if (!createBtn) { error('#btnCreateInvoice not found'); return; }
     createBtn.click();
     log('Clicked "Create Invoice"');
+
+    // Watch for the warehouse warning modal (div#wdialog)
+    // It may appear 200ms-2s later with "ΠΡΟΣΟΧΗ" + "δεν είναι διαθέσιμα"
+    // If all 3 conditions met: modal visible, contains both texts, has the button → click it
+    watchForWarningModal();
+  }
+
+  function watchForWarningModal() {
+    const observer = new MutationObserver(async () => {
+      const modal = document.querySelector('div#wdialog');
+      if (!modal || modal.style.display === 'none') return;
+
+      const text = modal.textContent;
+      const hasWarning = text.includes('ΠΡΟΣΟΧΗ');
+      const hasUnavailable = text.includes('δεν είναι διαθέσιμα');
+      if (!hasWarning || !hasUnavailable) return;
+
+      const confirmBtn = modal.querySelector('a#btn_savePlace');
+      if (!confirmBtn) return;
+
+      // All 3 conditions met — stop observing and click
+      observer.disconnect();
+      await sleep(100);
+      confirmBtn.click();
+      log('Warehouse warning modal: clicked "ΝΑΙ, Δημιουργία"');
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
+
+    // Stop watching after 5s if modal never appears
+    setTimeout(() => observer.disconnect(), 5000);
   }
 
   // Register buttons on control panel
