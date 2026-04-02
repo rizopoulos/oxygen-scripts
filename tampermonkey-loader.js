@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Oxygen ERP Scripts
 // @namespace    https://github.com/rizopoulos/oxygen-scripts
-// @version      1.1
+// @version      2.0.0
 // @description  Automates repetitive workflows in Oxygen ERP (Pelatologio.gr)
 // @match        https://app.pelatologio.gr/*
 // @grant        none
@@ -9,7 +9,9 @@
 // ==/UserScript==
 
 (function () {
+  const VERSION = '2.0.0';
   const BASE = 'https://raw.githubusercontent.com/rizopoulos/oxygen-scripts/main/src';
+  const CACHE_BUST = '?v=' + VERSION + '&t=' + Date.now();
 
   // Route table: URL pattern → script path
   const routes = [
@@ -18,7 +20,7 @@
   ];
 
   async function loadAndRun(path) {
-    const resp = await fetch(BASE + '/' + path);
+    const resp = await fetch(BASE + '/' + path + CACHE_BUST);
     if (!resp.ok) { console.error('[Oxygen] Failed to load ' + path + ': ' + resp.status); return; }
     const code = await resp.text();
     const script = document.createElement('script');
@@ -29,31 +31,29 @@
 
   async function init() {
     try {
+      console.log('[Oxygen] v' + VERSION + ' loading...');
+
       // Load shared utils
       await loadAndRun('lib/utils.js');
 
+      // Set version on utils for control panel
+      if (window.OxygenUtils) window.OxygenUtils.VERSION = VERSION;
+
+      // Load control panel on all pages
+      await loadAndRun('lib/panel.js');
+
       // Find matching page scripts
-      const url = window.location.href;
-      const matched = routes.filter(function(r) { return url.indexOf(r.pattern) !== -1; });
+      var url = window.location.href;
+      var matched = routes.filter(function(r) { return url.indexOf(r.pattern) !== -1; });
 
       for (var i = 0; i < matched.length; i++) {
         console.log('[Oxygen] Loading ' + matched[i].script);
         await loadAndRun(matched[i].script);
       }
 
-      if (matched.length > 0) console.log('[Oxygen] Ready');
+      if (matched.length > 0) console.log('[Oxygen] v' + VERSION + ' ready');
     } catch (err) {
       console.error('[Oxygen] Error: ' + err.message);
-    }
-  }
-
-  // Wait for page to be ready (table rendered) before injecting
-  function waitAndInit() {
-    // If page has a table or we've waited long enough, init
-    if (document.querySelector('table') || document.readyState === 'complete') {
-      init();
-    } else {
-      setTimeout(waitAndInit, 300);
     }
   }
 
