@@ -133,18 +133,22 @@
   function parseCustomers(html) {
     const div = document.createElement('div');
     div.innerHTML = html;
-    const rows = div.querySelectorAll('.hSearchLine[data-link]');
-    return Array.from(rows).map(row => {
-      const code = row.querySelector('span')?.textContent?.trim() || '';
-      const text = row.textContent.replace(code, '').trim();
-      const link = row.getAttribute('data-link');
-      // Extract contact ID from sibling elements — look in parent context
-      const parent = row.closest('.col80');
-      const nextSibling = parent?.nextElementSibling?.nextElementSibling;
-      const btn = nextSibling?.querySelector('[data-action="fasts-show_recent_invoices"]');
-      const contactId = btn?.getAttribute('data-docid') || '';
-      return { name: text, code, contactId, link };
-    });
+    // Contact IDs are on the "recent invoices" buttons
+    const btns = div.querySelectorAll('[data-action="fasts-show_recent_invoices"]');
+    const customers = [];
+    for (const btn of btns) {
+      const contactId = btn.getAttribute('data-docid');
+      // The customer name/code is in the .hSearchLine[data-link] before this button
+      // Walk backwards through siblings to find the col80 with the name
+      const container = btn.closest('[style*="max-height"]') || div;
+      const nameRow = container.querySelector(`.hSearchLine[data-link] ~ .col10 #btnstmp_${contactId}`)?.closest('.col10')?.previousElementSibling?.previousElementSibling?.querySelector('.hSearchLine')
+        || container.querySelector(`#btnstmpnotes_${contactId}`)?.closest('.col10')?.previousElementSibling?.querySelector('.hSearchLine');
+      if (!nameRow) continue;
+      const code = nameRow.querySelector('span')?.textContent?.trim() || '';
+      const name = nameRow.textContent.replace(code, '').trim();
+      customers.push({ name, code, contactId });
+    }
+    return customers;
   }
 
   // Parse recent invoices HTML
