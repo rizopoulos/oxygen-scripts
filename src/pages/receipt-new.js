@@ -122,30 +122,16 @@
     }
   }
 
-  // Inject a "Re-select Units" button near the products table header
-  function injectButton() {
-    const headings = document.querySelectorAll('div, span');
-    let target = null;
-    for (const el of headings) {
-      if (el.textContent.trim() === 'Αναλυτικές Γραμμές' && el.childNodes.length <= 2) {
-        target = el.closest('div');
-        break;
-      }
-    }
-
-    if (!target || target.querySelector('.oxygen-unit-btn')) return;
-
-    const btn = document.createElement('span');
-    btn.className = 'oxygen-unit-btn';
-    btn.textContent = 'Re-select Units (Μ/Μ)';
-    btn.title = 'Oxygen Script: Re-select measurement units for all products';
-    btn.addEventListener('click', () => reselectAllUnits(btn));
-    target.appendChild(btn);
-    log('Injected "Re-select Units" button');
+  // Register button on control panel
+  if (window.OxygenPanel) {
+    OxygenPanel.addButton('⚖', 'Re-select Units', async (btn) => {
+      OxygenPanel.setButtonState(btn, 'running');
+      await reselectAllUnits();
+      OxygenPanel.setButtonState(btn, 'active');
+    });
   }
 
   // Auto-run on page load
-  injectButton();
   reselectAllUnits();
 
   // Expose globally
