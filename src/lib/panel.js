@@ -164,6 +164,10 @@
       btn.innerHTML = '<span class="o-icon">' + icon + '</span><span class="o-label">' + label + '</span>';
       btn.addEventListener('click', () => onClick(btn));
       grid.appendChild(btn);
+      // Switch to 2-column grid when 2+ buttons
+      if (grid.children.length >= 2) {
+        grid.classList.add('two-col');
+      }
       return btn;
     },
 
