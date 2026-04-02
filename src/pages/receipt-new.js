@@ -161,7 +161,7 @@
       OxygenPanel.setButtonState(btn, 'active');
     });
 
-    OxygenPanel.addButton('💳', 'Πληρωμή με κάρτα', async (btn) => {
+    OxygenPanel.addButton('💳', 'Card', async (btn) => {
       OxygenPanel.setButtonState(btn, 'running');
       await payAndCreate(8, 'Κάρτα');
       OxygenPanel.setButtonState(btn, 'active');
