@@ -40,12 +40,14 @@
       // Set version on utils for control panel
       if (window.OxygenUtils) window.OxygenUtils.VERSION = VERSION;
 
-      // Load control panel on all pages
-      await loadAndRun('lib/panel.js');
-
       // Find matching page scripts
       var url = window.location.href;
       var matched = routes.filter(function(r) { return url.indexOf(r.pattern) !== -1; });
+
+      // Load control panel only on pages that have scripts
+      if (matched.length > 0) {
+        await loadAndRun('lib/panel.js');
+      }
 
       for (var i = 0; i < matched.length; i++) {
         console.log('[Oxygen] Loading ' + matched[i].script);
