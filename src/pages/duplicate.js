@@ -203,7 +203,7 @@
       const linkHref = row.getAttribute('data-link') || '';
       const idMatch = linkHref.match(/[&?]i=(\d+)/);
       const contactId = idMatch?.[1] || '';
-      if (contactId) customers.push({ name, code, contactId });
+      if (contactId) customers.push({ name, code, contactId, email: '', phone: '' });
     }
     return customers;
   }
