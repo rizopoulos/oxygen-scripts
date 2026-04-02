@@ -301,21 +301,42 @@
     const results = overlay.querySelector('.o-dup-results');
     let searchTimeout = null;
 
+    let lastSearchTerm = '';
+    let searchReady = false;
+
     input.addEventListener('input', () => {
       clearTimeout(searchTimeout);
+      searchReady = false;
       const term = input.value.trim();
       if (term.length < 2) { results.innerHTML = ''; return; }
-      searchTimeout = setTimeout(() => searchCustomers(term, results), 300);
+      searchTimeout = setTimeout(async () => {
+        lastSearchTerm = term;
+        await searchCustomers(term, results);
+        searchReady = true;
+      }, 300);
     });
 
-    input.addEventListener('keydown', (e) => {
+    input.addEventListener('keydown', async (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        // Click the first result item (customer or invoice)
+        const term = input.value.trim();
+
+        // If results aren't loaded yet, search immediately first
+        if (!searchReady && term.length >= 2) {
+          clearTimeout(searchTimeout);
+          lastSearchTerm = term;
+          await searchCustomers(term, results);
+          searchReady = true;
+        }
+
+        // Now click the first result
         const firstItem = results.querySelector('.o-dup-item, .o-dup-inv-item');
         if (firstItem) {
           firstItem.classList.add('o-dup-flash');
-          setTimeout(() => firstItem.click(), 150);
+          setTimeout(() => {
+            firstItem.click();
+            searchReady = false;
+          }, 150);
         }
       }
       if (e.key === 'Escape') {
