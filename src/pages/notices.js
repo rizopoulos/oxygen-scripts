@@ -129,13 +129,9 @@
 
       // ΤΙΜ = Τιμολόγιο (invoice)
       const btnTIM = document.createElement('span');
-      btnTIM.className = 'oxygen-btn';
+      btnTIM.className = 'oxygen-btn tim';
       btnTIM.title = 'Μετατροπή σε Τιμολόγιο';
       btnTIM.textContent = 'ΤΙΜ';
-      btnTIM.style.borderColor = '#008582';
-      btnTIM.style.color = '#008582';
-      btnTIM.addEventListener('mouseenter', () => { btnTIM.style.background = '#008582'; btnTIM.style.color = '#fff'; });
-      btnTIM.addEventListener('mouseleave', () => { btnTIM.style.background = '#fff'; btnTIM.style.color = '#008582'; });
       btnTIM.addEventListener('click', (e) => {
         e.stopPropagation();
         e.preventDefault();
