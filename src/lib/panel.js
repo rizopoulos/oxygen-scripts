@@ -64,8 +64,8 @@
       justify-content: center;
       width: 100%;
       min-height: 30px;
-      border: 1px solid #815f88;
-      background: #000;
+      border: 1px solid #fff;
+      background: #815f88;
       color: #fff;
       border-radius: 4px;
       cursor: pointer;
@@ -77,7 +77,7 @@
       padding: 4px;
     }
     #oxygen-panel .o-btn:hover {
-      background: #815f88;
+      background: #D35155;
       border-color: #fff;
       color: #fff;
     }
