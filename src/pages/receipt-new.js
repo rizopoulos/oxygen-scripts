@@ -13,38 +13,7 @@
   const DELAY_BETWEEN_ROWS = 300;
   const DELAY_DROPDOWN = 400;
 
-  injectCSS('oxygen-receipt-css', `
-    .oxygen-unit-btn {
-      display: inline-flex;
-      align-items: center;
-      padding: 4px 12px;
-      border: 1px solid #28a745;
-      background: #d4edda;
-      color: #155724;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: bold;
-      margin-left: 10px;
-      transition: all 0.15s;
-    }
-    .oxygen-unit-btn:hover {
-      background: #28a745;
-      color: #fff;
-    }
-    .oxygen-unit-btn.running {
-      background: #007bff;
-      border-color: #007bff;
-      color: #fff;
-      pointer-events: none;
-      opacity: 0.7;
-    }
-    .oxygen-unit-btn.done {
-      background: #28a745;
-      border-color: #28a745;
-      color: #fff;
-    }
-  `);
+  // All buttons are on the control panel now — no inline CSS needed
 
   // DOM structure per Μ/Μ cell:
   //   <span class="sauto" data-action="element-unitmList" data-id="1">
