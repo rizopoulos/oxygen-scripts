@@ -316,9 +316,15 @@
       for (const c of customers) {
         const item = document.createElement('div');
         item.className = 'o-dup-item';
+        const initials = c.name.split(' ').map(w => w[0] || '').slice(0, 2).join('').toUpperCase();
+        const contactLine = [c.email, c.phone].filter(Boolean).join(' \u00b7 ') || c.code;
         item.innerHTML = `
-          <span><span class="o-dup-item-code">${c.code}</span> <span class="o-dup-item-name">${c.name}</span></span>
-          <span style="color:#815f88;">▸</span>
+          <div class="o-dup-item-avatar">${initials}</div>
+          <div class="o-dup-item-info">
+            <div class="o-dup-item-name">${c.name}</div>
+            <div class="o-dup-item-contact">${contactLine}</div>
+          </div>
+          <span class="o-dup-item-arrow">\u203a</span>
         `;
         item.addEventListener('click', () => loadInvoices(c, container));
         container.appendChild(item);
