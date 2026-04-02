@@ -276,8 +276,8 @@
     overlay.innerHTML = `
       <div class="o-dup-dialog">
         <div class="o-dup-header">
-          <span>Αντιγραφή παραστατικού</span>
-          <span class="o-dup-close">&times;</span>
+          <div class="o-dup-header-left"><div class="o-dup-header-dot"></div> Αντιγραφή παραστατικού</div>
+          <div class="o-dup-close">&times;</div>
         </div>
         <div class="o-dup-body">
           <input class="o-dup-input" placeholder="Αναζήτηση πελάτη..." autofocus>
