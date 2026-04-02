@@ -2,6 +2,8 @@
 // Oxygen Scripts - Control Panel
 // ===========================================================================
 // Floating panel on the right side with action buttons per page.
+// Click the header to toggle open/collapsed.
+// Colors: #D35155 (berry-red), #008582 (leafy-green), #815f88 (deep-purple), #000, #fff
 // ===========================================================================
 
 (function () {
@@ -16,11 +18,11 @@
       top: 80px;
       right: 0;
       z-index: 99999;
-      width: 44px;
-      background: #1a1a2e;
+      width: 180px;
+      background: #000;
       border-radius: 8px 0 0 8px;
       box-shadow: -2px 2px 10px rgba(0,0,0,0.3);
-      padding: 8px 6px;
+      padding: 8px 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -28,25 +30,33 @@
       transition: width 0.2s, padding 0.2s;
       overflow: hidden;
     }
-    #oxygen-panel:hover {
-      width: 180px;
-      padding: 8px 10px;
+    #oxygen-panel.collapsed {
+      width: 44px;
+      padding: 8px 6px;
     }
-    #oxygen-panel .o-panel-title {
-      color: #e0a800;
-      font-size: 10px;
-      font-weight: bold;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    #oxygen-panel .o-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 100%;
-      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      gap: 6px;
       margin-bottom: 2px;
     }
+    #oxygen-panel .o-panel-title {
+      color: #D35155;
+      font-size: 12px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
     #oxygen-panel .o-panel-version {
-      color: #666;
+      color: #815f88;
       font-size: 9px;
       white-space: nowrap;
+    }
+    #oxygen-panel.collapsed .o-panel-version {
+      display: none;
     }
     #oxygen-panel .o-btn {
       display: flex;
@@ -54,9 +64,9 @@
       justify-content: center;
       width: 100%;
       min-height: 30px;
-      border: 1px solid #333;
-      background: #16213e;
-      color: #eee;
+      border: 1px solid #815f88;
+      background: #000;
+      color: #fff;
       border-radius: 4px;
       cursor: pointer;
       font-size: 11px;
@@ -67,18 +77,18 @@
       padding: 4px;
     }
     #oxygen-panel .o-btn:hover {
-      background: #0f3460;
-      border-color: #e0a800;
-      color: #e0a800;
+      background: #815f88;
+      border-color: #fff;
+      color: #fff;
     }
     #oxygen-panel .o-btn.active {
-      background: #28a745;
-      border-color: #28a745;
+      background: #008582;
+      border-color: #008582;
       color: #fff;
     }
     #oxygen-panel .o-btn.running {
-      background: #007bff;
-      border-color: #007bff;
+      background: #815f88;
+      border-color: #815f88;
       color: #fff;
       opacity: 0.7;
       pointer-events: none;
@@ -89,18 +99,22 @@
     }
     #oxygen-panel .o-btn .o-label {
       margin-left: 6px;
-      display: none;
     }
-    #oxygen-panel:hover .o-btn .o-label {
-      display: inline;
+    #oxygen-panel.collapsed .o-btn .o-label {
+      display: none;
     }
   `);
 
   // Create panel
   const panel = document.createElement('div');
   panel.id = 'oxygen-panel';
-  panel.innerHTML = '<div class="o-panel-title">O₂</div><div class="o-panel-version">v' + VERSION + '</div>';
+  panel.innerHTML = '<div class="o-panel-header"><span class="o-panel-title">O\u2082</span><span class="o-panel-version">v' + VERSION + '</span></div>';
   document.body.appendChild(panel);
+
+  // Toggle on header click
+  panel.querySelector('.o-panel-header').addEventListener('click', () => {
+    panel.classList.toggle('collapsed');
+  });
 
   // Public API: page scripts register their buttons here
   window.OxygenPanel = {
