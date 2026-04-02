@@ -301,45 +301,48 @@
     const results = overlay.querySelector('.o-dup-results');
     let searchTimeout = null;
 
-    let lastSearchTerm = '';
-    let searchReady = false;
+    let selectedIndex = -1;
+
+    function getItems() {
+      return results.querySelectorAll('.o-dup-item, .o-dup-inv-item');
+    }
+
+    function highlightItem(index) {
+      const items = getItems();
+      items.forEach(el => el.classList.remove('o-dup-highlight'));
+      if (index >= 0 && index < items.length) {
+        items[index].classList.add('o-dup-highlight');
+        items[index].scrollIntoView({ block: 'nearest' });
+      }
+    }
 
     input.addEventListener('input', () => {
       clearTimeout(searchTimeout);
-      searchReady = false;
+      selectedIndex = -1;
       const term = input.value.trim();
       if (term.length < 2) { results.innerHTML = ''; return; }
-      searchTimeout = setTimeout(async () => {
-        lastSearchTerm = term;
-        await searchCustomers(term, results);
-        searchReady = true;
-      }, 300);
+      searchTimeout = setTimeout(() => searchCustomers(term, results), 300);
     });
 
-    input.addEventListener('keydown', async (e) => {
-      if (e.key === 'Enter') {
+    input.addEventListener('keydown', (e) => {
+      const items = getItems();
+      if (e.key === 'ArrowDown') {
         e.preventDefault();
-        const term = input.value.trim();
-
-        // If results aren't loaded yet, search immediately first
-        if (!searchReady && term.length >= 2) {
-          clearTimeout(searchTimeout);
-          lastSearchTerm = term;
-          await searchCustomers(term, results);
-          searchReady = true;
+        if (items.length === 0) return;
+        selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+        highlightItem(selectedIndex);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (items.length === 0) return;
+        selectedIndex = Math.max(selectedIndex - 1, 0);
+        highlightItem(selectedIndex);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (selectedIndex >= 0 && selectedIndex < items.length) {
+          items[selectedIndex].classList.add('o-dup-flash');
+          setTimeout(() => items[selectedIndex].click(), 150);
         }
-
-        // Now click the first result
-        const firstItem = results.querySelector('.o-dup-item, .o-dup-inv-item');
-        if (firstItem) {
-          firstItem.classList.add('o-dup-flash');
-          setTimeout(() => {
-            firstItem.click();
-            searchReady = false;
-          }, 150);
-        }
-      }
-      if (e.key === 'Escape') {
+      } else if (e.key === 'Escape') {
         closeDialog();
       }
     });
