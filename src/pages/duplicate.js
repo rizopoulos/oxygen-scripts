@@ -396,7 +396,7 @@
 
   // Register on panel
   if (window.OxygenPanel) {
-    OxygenPanel.addButton('📋', 'Αντιγραφή παραστατικού', () => {
+    OxygenPanel.addButton('📋', 'Copy', () => {
       showDialog();
     });
   }
