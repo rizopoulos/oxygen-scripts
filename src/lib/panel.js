@@ -18,116 +18,134 @@
       top: 80px;
       right: 0;
       z-index: 99999;
-      width: 200px;
-      background: #000;
-      border-radius: 12px 0 0 12px;
-      box-shadow: -4px 0 20px rgba(0,0,0,0.4);
-      padding: 12px 12px;
+      width: 230px;
+      background: #D35155;
+      border-radius: 4px 0 0 4px;
+      box-shadow: -4px 0 20px rgba(211,81,85,0.25);
+      padding: 12px;
       display: flex;
       flex-direction: column;
-      align-items: center;
       gap: 8px;
-      transition: width 0.25s ease, padding 0.25s ease, opacity 0.25s ease;
+      transition: width 0.3s cubic-bezier(0.4,0,0.2,1), padding 0.3s ease;
       overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
     #oxygen-panel.collapsed {
-      width: 40px;
-      padding: 12px 4px;
+      width: 48px;
+      padding: 12px 6px;
     }
     #oxygen-panel .o-panel-header {
       display: flex;
       align-items: center;
-      justify-content: center;
       width: 100%;
       cursor: pointer;
       user-select: none;
       gap: 8px;
       padding-bottom: 8px;
-      border-bottom: 1px solid #815f88;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
       margin-bottom: 2px;
     }
-    #oxygen-panel .o-panel-title {
-      color: #D35155;
-      font-size: 14px;
-      font-weight: 800;
-      white-space: nowrap;
-      letter-spacing: 1px;
+    #oxygen-panel .o-panel-logo {
+      height: 20px;
+      opacity: 0.95;
+      flex-shrink: 0;
     }
     #oxygen-panel .o-panel-version {
-      color: #815f88;
       font-size: 9px;
+      color: #fff;
+      opacity: 0.7;
+      margin-left: auto;
       white-space: nowrap;
-      opacity: 0.8;
     }
-    #oxygen-panel.collapsed .o-panel-version {
-      display: none;
-    }
+    #oxygen-panel.collapsed .o-panel-version { display: none; }
+    #oxygen-panel.collapsed .o-panel-logo { display: none; }
     #oxygen-panel.collapsed .o-panel-header {
       border-bottom: none;
       padding-bottom: 4px;
+      justify-content: center;
+    }
+    #oxygen-panel .o-panel-toggle {
+      color: #fff;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    #oxygen-panel .o-btn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      width: 100%;
+    }
+    #oxygen-panel.collapsed .o-btn-grid {
+      grid-template-columns: 1fr;
     }
     #oxygen-panel .o-btn {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 100%;
-      min-height: 34px;
+      gap: 5px;
+      height: 36px;
       border: none;
-      background: #815f88;
+      background: #000;
       color: #fff;
-      border-radius: 8px;
+      border-radius: 4px;
       cursor: pointer;
       font-size: 11px;
       font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
-      transition: background 0.15s ease, transform 0.1s ease;
-      padding: 6px 8px;
-      letter-spacing: 0.3px;
+      transition: all 0.15s ease;
+      padding: 0 8px;
+      font-family: inherit;
     }
     #oxygen-panel .o-btn:hover {
-      background: #D35155;
-      transform: scale(1.03);
+      background: #fff;
+      color: #000;
     }
     #oxygen-panel .o-btn:active {
-      transform: scale(0.97);
+      transform: scale(0.96);
     }
     #oxygen-panel .o-btn.active {
-      background: #008582;
+      background: #815f88;
+      color: #fff;
+      opacity: 0.6;
     }
     #oxygen-panel .o-btn.running {
-      background: #815f88;
-      opacity: 0.6;
+      background: #000;
+      opacity: 0.5;
       pointer-events: none;
       animation: oxygen-pulse 1.2s ease-in-out infinite;
     }
     @keyframes oxygen-pulse {
-      0%, 100% { opacity: 0.6; }
-      50% { opacity: 0.9; }
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 0.8; }
     }
     #oxygen-panel .o-btn .o-icon {
-      font-size: 15px;
+      font-size: 13px;
       flex-shrink: 0;
     }
-    #oxygen-panel .o-btn .o-label {
-      margin-left: 8px;
-    }
+    #oxygen-panel .o-btn .o-label {}
     #oxygen-panel.collapsed .o-btn .o-label {
       display: none;
     }
     #oxygen-panel.collapsed .o-btn {
-      border-radius: 6px;
-      min-height: 30px;
-      padding: 4px;
+      height: 32px;
     }
   `);
 
   // Create panel
   const panel = document.createElement('div');
   panel.id = 'oxygen-panel';
-  panel.innerHTML = '<div class="o-panel-header"><span class="o-panel-title">O\u2082</span><span class="o-panel-version">v' + VERSION + '</span></div>';
+  panel.innerHTML = [
+    '<div class="o-panel-header">',
+    '  <span class="o-panel-toggle">\u2630</span>',
+    '  <img class="o-panel-logo" src="https://cdn.rizopouloscoffee.gr/www/logos/rizopoulos--white.png" alt="">',
+    '  <span class="o-panel-version">v' + VERSION + '</span>',
+    '</div>',
+    '<div class="o-btn-grid"></div>',
+  ].join('');
   document.body.appendChild(panel);
+
+  const grid = panel.querySelector('.o-btn-grid');
 
   // Toggle on header click
   panel.querySelector('.o-panel-header').addEventListener('click', () => {
@@ -142,7 +160,7 @@
       btn.title = label;
       btn.innerHTML = '<span class="o-icon">' + icon + '</span><span class="o-label">' + label + '</span>';
       btn.addEventListener('click', () => onClick(btn));
-      panel.appendChild(btn);
+      grid.appendChild(btn);
       return btn;
     },
 
