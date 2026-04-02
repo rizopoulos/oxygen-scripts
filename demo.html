@@ -16,176 +16,137 @@
     --font: 'DM Sans', sans-serif;
     --mono: 'JetBrains Mono', monospace;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
     font-family: var(--font);
-    background: var(--black);
-    color: var(--white);
+    background: var(--white);
+    color: var(--black);
     min-height: 100vh;
-    overflow-x: hidden;
   }
 
-  /* ─── GRAIN OVERLAY ─── */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 99999;
-    opacity: 0.03;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  }
-
-  /* ─── HERO HEADER ─── */
-  .hero {
-    padding: 80px 60px 60px;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: -120px;
-    right: -80px;
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, var(--purple) 0%, transparent 70%);
-    opacity: 0.12;
-    pointer-events: none;
-  }
-  .hero-tag {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--purple);
-    margin-bottom: 20px;
-    opacity: 0;
-    animation: fadeUp 0.6s ease forwards;
-  }
-  .hero h1 {
-    font-size: clamp(48px, 7vw, 96px);
-    font-weight: 800;
-    line-height: 0.95;
-    letter-spacing: -3px;
-    margin-bottom: 16px;
-    opacity: 0;
-    animation: fadeUp 0.6s ease 0.1s forwards;
-  }
-  .hero h1 .accent { color: var(--red); }
-  .hero p {
-    font-size: 18px;
-    color: var(--purple);
-    max-width: 500px;
-    line-height: 1.5;
-    opacity: 0;
-    animation: fadeUp 0.6s ease 0.2s forwards;
-  }
-  .hero .version-pill {
-    display: inline-block;
-    font-family: var(--mono);
-    font-size: 11px;
-    padding: 4px 12px;
-    background: var(--red);
-    color: var(--white);
-    border-radius: 100px;
-    margin-top: 24px;
-    letter-spacing: 1px;
-    opacity: 0;
-    animation: fadeUp 0.6s ease 0.3s forwards;
-  }
-
-  /* ─── PALETTE BAR ─── */
-  .palette {
-    display: flex;
-    gap: 0;
-    margin: 0 60px 60px;
-    border-radius: 12px;
-    overflow: hidden;
-    opacity: 0;
-    animation: fadeUp 0.6s ease 0.4s forwards;
-  }
-  .palette-swatch {
-    flex: 1;
-    height: 64px;
+  /* ─── HEADER BAR ─── */
+  .top-bar {
+    background: var(--black);
+    padding: 16px 40px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    transition: flex 0.3s ease;
-    cursor: default;
+    justify-content: space-between;
   }
-  .palette-swatch:hover { flex: 2; }
-  .palette-swatch.s-red { background: var(--red); color: var(--white); }
-  .palette-swatch.s-green { background: var(--green); color: var(--white); }
-  .palette-swatch.s-purple { background: var(--purple); color: var(--white); }
-  .palette-swatch.s-black { background: var(--black); color: var(--white); border: 1px solid #222; }
-  .palette-swatch.s-white { background: var(--white); color: var(--black); }
+  .top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .logo {
+    font-family: var(--mono);
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--white);
+    letter-spacing: 2px;
+  }
+  .logo .accent { color: var(--red); }
+  .version-pill {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 10px;
+    background: var(--purple);
+    color: var(--white);
+    border-radius: 100px;
+    letter-spacing: 1px;
+  }
+  .top-bar-right {
+    display: flex;
+    gap: 6px;
+  }
+  .palette-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.15);
+  }
 
-  /* ─── SECTION ─── */
+  /* ─── SECTION LAYOUT ─── */
   .section {
-    padding: 60px;
-    border-top: 1px solid #1a1a1a;
+    padding: 48px 40px;
+    border-bottom: 1px solid #eee;
   }
   .section-label {
     font-family: var(--mono);
     font-size: 10px;
-    letter-spacing: 5px;
+    letter-spacing: 4px;
     text-transform: uppercase;
     color: var(--red);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
   .section-title {
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 800;
     letter-spacing: -1px;
-    margin-bottom: 32px;
+    margin-bottom: 8px;
+    color: var(--black);
   }
   .section-desc {
     color: var(--purple);
     font-size: 14px;
-    margin-bottom: 32px;
-    max-width: 600px;
+    margin-bottom: 28px;
+    max-width: 560px;
     line-height: 1.6;
   }
 
-  /* ─── DEMO STAGE ─── */
+  /* ─── DEMO STAGE (simulates ERP page) ─── */
   .stage {
-    background: #0a0a0a;
-    border-radius: 16px;
-    padding: 40px;
+    background: #f7f5f8;
+    border-radius: 14px;
+    padding: 32px;
     position: relative;
-    overflow: hidden;
-    min-height: 300px;
+    min-height: 280px;
+    border: 1px solid #ece8ed;
   }
-  .stage::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 16px;
-    border: 1px solid #1a1a1a;
-    pointer-events: none;
+  .stage-dark {
+    background: #f0edf1;
   }
 
-  /* ─── FLOATING PANEL (demo) ─── */
+  /* ─── TABS ─── */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+  }
+  .tab {
+    padding: 7px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    transition: all 0.15s;
+    background: transparent;
+    color: var(--purple);
+    border: 1px solid #e0d6e3;
+    font-family: var(--font);
+  }
+  .tab:hover { background: #f7f5f8; color: var(--black); }
+  .tab.active { background: var(--black); color: var(--white); border-color: var(--black); }
+  .pane { display: none; }
+  .pane.active { display: block; }
+
+  /* ════════════════════════════════════════════
+     COMPONENT: FLOATING PANEL
+     ════════════════════════════════════════════ */
   #demo-panel {
     position: absolute;
-    top: 30px;
+    top: 24px;
     right: 0;
     width: 210px;
     background: var(--black);
     border-radius: 14px 0 0 14px;
-    box-shadow: -6px 0 30px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(129,95,136,0.15);
-    padding: 14px 14px;
+    box-shadow: -4px 0 24px rgba(0,0,0,0.15);
+    padding: 14px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
     transition: width 0.3s cubic-bezier(0.4,0,0.2,1), padding 0.3s ease;
     overflow: hidden;
     z-index: 10;
@@ -194,6 +155,7 @@
     width: 48px;
     padding: 14px 6px;
   }
+
   .dp-header {
     display: flex;
     align-items: center;
@@ -203,35 +165,33 @@
     user-select: none;
     gap: 8px;
     padding-bottom: 10px;
-    border-bottom: 1px solid rgba(129,95,136,0.25);
-    margin-bottom: 4px;
+    margin-bottom: 3px;
     position: relative;
   }
   .dp-header::after {
     content: '';
     position: absolute;
-    bottom: -1px;
-    left: 20%;
-    width: 60%;
+    bottom: 0;
+    left: 10%;
+    width: 80%;
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--purple), transparent);
+    opacity: 0.4;
   }
-  .dp-title {
+  .dp-logo {
     color: var(--red);
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 800;
-    white-space: nowrap;
-    letter-spacing: 2px;
     font-family: var(--mono);
+    letter-spacing: 2px;
   }
-  .dp-version {
+  .dp-ver {
+    font-family: var(--mono);
     color: var(--purple);
     font-size: 9px;
-    font-family: var(--mono);
-    opacity: 0.7;
+    opacity: 0.6;
   }
-  #demo-panel.collapsed .dp-version { display: none; }
-  #demo-panel.collapsed .dp-header { border-bottom: none; padding-bottom: 6px; }
+  #demo-panel.collapsed .dp-ver { display: none; }
   #demo-panel.collapsed .dp-header::after { display: none; }
 
   .dp-btn {
@@ -239,91 +199,92 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    min-height: 38px;
+    height: 36px;
     border: none;
     background: var(--purple);
     color: var(--white);
-    border-radius: 10px;
+    border-radius: 9px;
     cursor: pointer;
     font-family: var(--font);
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
-    padding: 8px 10px;
-    letter-spacing: 0.3px;
+    padding: 0 10px;
     position: relative;
   }
-  .dp-btn::before {
+  .dp-btn::after {
     content: '';
     position: absolute;
-    inset: 0;
-    border-radius: 10px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, transparent 100%);
+    top: 0; left: 0; right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.08), transparent);
+    border-radius: 9px 9px 0 0;
     pointer-events: none;
   }
   .dp-btn:hover {
     background: var(--red);
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(211,81,85,0.3);
+    box-shadow: 0 4px 14px rgba(211,81,85,0.25);
   }
   .dp-btn:active { transform: translateY(0); box-shadow: none; }
-  .dp-btn.active {
-    background: var(--green);
-    box-shadow: 0 4px 16px rgba(0,133,130,0.3);
-  }
+  .dp-btn.active { background: var(--green); }
   .dp-btn.running {
-    background: var(--purple);
     opacity: 0.5;
     pointer-events: none;
     animation: pulse 1.2s ease-in-out infinite;
   }
   @keyframes pulse {
-    0%, 100% { opacity: 0.5; }
+    0%,100% { opacity: 0.5; }
     50% { opacity: 0.8; }
   }
-  .dp-btn .dp-icon {
-    font-size: 16px;
-    flex-shrink: 0;
-    width: 22px;
-    text-align: center;
-  }
-  .dp-btn .dp-label { margin-left: 8px; }
+  .dp-btn .dp-icon { font-size: 14px; width: 20px; text-align: center; flex-shrink: 0; }
+  .dp-btn .dp-label { margin-left: 7px; }
   #demo-panel.collapsed .dp-btn .dp-label { display: none; }
-  #demo-panel.collapsed .dp-btn { border-radius: 8px; min-height: 34px; }
+  #demo-panel.collapsed .dp-btn { height: 32px; border-radius: 7px; }
 
-  /* ─── NOTICE BUTTONS (demo) ─── */
+  /* ════════════════════════════════════════════
+     COMPONENT: NOTICE ROW BUTTONS
+     ════════════════════════════════════════════ */
   .demo-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     font-size: 13px;
+    background: var(--white);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   }
   .demo-table th {
     text-align: left;
-    padding: 10px 14px;
+    padding: 12px 16px;
     color: var(--purple);
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
-    border-bottom: 1px solid #1a1a1a;
+    background: #faf8fb;
+    border-bottom: 2px solid #f0ecf1;
   }
   .demo-table td {
-    padding: 12px 14px;
-    border-bottom: 1px solid #0f0f0f;
+    padding: 14px 16px;
+    border-bottom: 1px solid #f5f2f6;
     vertical-align: middle;
-    color: var(--white);
   }
-  .demo-table tr:hover td { background: rgba(129,95,136,0.04); }
-  .demo-table .notice-id {
+  .demo-table tbody tr { transition: background 0.1s; }
+  .demo-table tbody tr:hover { background: #fdfcfd; }
+  .demo-table tbody tr:last-child td { border-bottom: none; }
+
+  .notice-id {
     font-family: var(--mono);
     font-size: 11px;
     color: var(--purple);
   }
-  .demo-table .notice-name { font-weight: 600; }
-  .demo-table .notice-amount {
+  .notice-name { font-weight: 700; }
+  .notice-desc { color: var(--purple); }
+  .notice-amount {
     font-family: var(--mono);
     font-weight: 700;
     color: var(--green);
@@ -334,146 +295,134 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 28px;
     border: none;
     color: var(--white);
-    border-radius: 8px;
+    border-radius: 7px;
     cursor: pointer;
     font-size: 10px;
     font-weight: 800;
-    margin-right: 5px;
+    margin-right: 4px;
     transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
-    line-height: 1;
     letter-spacing: 0.5px;
     position: relative;
   }
-  .row-btn::before {
+  .row-btn::after {
     content: '';
     position: absolute;
-    inset: 0;
-    border-radius: 8px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+    top: 0; left: 0; right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.12), transparent);
+    border-radius: 7px 7px 0 0;
     pointer-events: none;
   }
   .row-btn.btn-ap { background: var(--red); }
   .row-btn.btn-tim { background: var(--green); }
   .row-btn:hover {
-    background: var(--black);
-    transform: scale(1.12);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    transform: translateY(-2px) scale(1.08);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
   }
   .row-btn:active { transform: scale(0.95); }
 
-  /* ─── DUPLICATE DIALOG (demo) ─── */
-  .dup-overlay {
-    position: relative;
-    width: 100%;
+  /* ════════════════════════════════════════════
+     COMPONENT: DUPLICATE DIALOG
+     ════════════════════════════════════════════ */
+  .dup-wrap {
     display: flex;
     justify-content: center;
-    padding: 20px 0;
+    padding: 10px 0;
   }
   .dup-dialog {
     background: var(--white);
     border-radius: 16px;
-    width: 480px;
+    width: 460px;
     overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(129,95,136,0.1);
-    color: var(--black);
-    animation: dialogIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.12), 0 0 0 1px rgba(129,95,136,0.08);
+    animation: dialogIn 0.4s cubic-bezier(0.16,1,0.3,1);
   }
   @keyframes dialogIn {
-    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+    from { opacity: 0; transform: translateY(16px) scale(0.98); }
     to { opacity: 1; transform: translateY(0) scale(1); }
   }
+
   .dup-header {
     background: var(--black);
     color: var(--white);
-    padding: 18px 22px;
-    font-weight: 700;
-    font-size: 15px;
+    padding: 16px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    letter-spacing: -0.3px;
   }
   .dup-header-left {
     display: flex;
     align-items: center;
     gap: 10px;
-  }
-  .dup-header-icon {
-    width: 28px;
-    height: 28px;
-    background: var(--purple);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-weight: 700;
     font-size: 14px;
   }
+  .dup-header-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--red);
+  }
   .dup-close {
-    color: var(--red);
-    cursor: pointer;
-    font-size: 22px;
-    font-weight: 300;
-    line-height: 1;
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 8px;
+    cursor: pointer;
+    color: var(--purple);
+    font-size: 18px;
     transition: all 0.15s;
   }
   .dup-close:hover { background: var(--red); color: var(--white); }
-  .dup-body { padding: 20px 22px; }
-  .dup-input-wrap {
-    position: relative;
-    margin-bottom: 16px;
-  }
-  .dup-input-icon {
+
+  .dup-body { padding: 18px 20px; }
+
+  .dup-input-wrap { position: relative; margin-bottom: 14px; }
+  .dup-search-icon {
     position: absolute;
     left: 14px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--purple);
-    font-size: 14px;
+    font-size: 13px;
     pointer-events: none;
   }
   .dup-input {
     width: 100%;
-    padding: 14px 14px 14px 40px;
-    border: 2px solid #e0d6e3;
-    border-radius: 12px;
+    padding: 12px 12px 12px 38px;
+    border: 2px solid #e8e0eb;
+    border-radius: 10px;
     font-family: var(--font);
     font-size: 14px;
     outline: none;
-    background: var(--white);
     color: var(--black);
     transition: border-color 0.2s;
+    background: var(--white);
   }
   .dup-input:focus { border-color: var(--red); }
-  .dup-input::placeholder { color: #b0a3b5; }
+  .dup-input::placeholder { color: #bdb0c2; }
 
-  .dup-results { display: flex; flex-direction: column; gap: 2px; }
-
-  .dup-item {
-    padding: 12px 14px;
+  /* Customer list */
+  .dup-customer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
     border-radius: 10px;
     cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     transition: all 0.15s;
-    font-size: 13px;
+    margin-bottom: 2px;
   }
-  .dup-item:hover { background: #f6f2f7; }
-  .dup-item:active { background: #ede5ef; }
-  .dup-item-left { display: flex; align-items: center; gap: 10px; }
-  .dup-item-avatar {
-    width: 36px;
-    height: 36px;
+  .dup-customer:hover { background: #f8f5f9; }
+  .dup-avatar {
+    width: 38px;
+    height: 38px;
     border-radius: 10px;
     background: var(--purple);
     color: var(--white);
@@ -484,35 +433,53 @@
     font-size: 13px;
     flex-shrink: 0;
   }
-  .dup-item-name { font-weight: 700; color: var(--black); font-size: 14px; }
-  .dup-item-code {
-    font-family: var(--mono);
-    font-size: 10px;
+  .dup-cust-name { font-weight: 700; font-size: 14px; }
+  .dup-cust-code { font-family: var(--mono); font-size: 10px; color: var(--purple); margin-top: 1px; }
+  .dup-cust-arrow {
+    margin-left: auto;
     color: var(--purple);
-    margin-top: 2px;
+    font-size: 18px;
+    transition: all 0.2s;
   }
-  .dup-item-arrow { color: var(--purple); font-size: 18px; transition: transform 0.2s; }
-  .dup-item:hover .dup-item-arrow { transform: translateX(3px); color: var(--red); }
+  .dup-customer:hover .dup-cust-arrow { transform: translateX(3px); color: var(--red); }
 
-  /* invoice items */
-  .dup-inv-item {
-    padding: 14px;
-    border-radius: 10px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
+  /* Invoice list */
+  .dup-back-link {
+    display: inline-flex;
     align-items: center;
-    transition: all 0.15s;
+    gap: 4px;
+    color: var(--purple);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: color 0.15s;
+  }
+  .dup-back-link:hover { color: var(--red); }
+  .dup-cust-heading {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 14px;
+  }
+  .dup-invoice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 14px;
+    border-radius: 10px;
     border: 1px solid #f0ecf1;
     margin-bottom: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
   }
-  .dup-inv-item:hover {
+  .dup-invoice:hover {
     border-color: var(--purple);
-    background: #faf8fb;
+    background: #fdfafe;
     transform: translateX(4px);
   }
   .dup-inv-left { display: flex; align-items: center; gap: 10px; }
-  .dup-inv-badge {
+  .dup-badge {
     padding: 3px 8px;
     border-radius: 6px;
     font-size: 10px;
@@ -520,9 +487,9 @@
     color: var(--white);
     letter-spacing: 0.5px;
   }
-  .dup-inv-badge.receipt { background: var(--red); }
-  .dup-inv-badge.invoice { background: var(--green); }
-  .dup-inv-detail { font-size: 13px; color: var(--black); }
+  .dup-badge.receipt { background: var(--red); }
+  .dup-badge.invoice { background: var(--green); }
+  .dup-inv-no { font-size: 13px; font-weight: 600; }
   .dup-inv-date { font-size: 11px; color: var(--purple); margin-top: 1px; }
   .dup-inv-amount {
     font-family: var(--mono);
@@ -531,142 +498,91 @@
     color: var(--green);
   }
 
-  .dup-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    color: var(--purple);
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-bottom: 12px;
-    transition: color 0.15s;
-  }
-  .dup-back:hover { color: var(--red); }
-  .dup-customer-name {
-    font-size: 18px;
-    font-weight: 800;
-    margin-bottom: 14px;
-    letter-spacing: -0.5px;
-    color: var(--black);
-  }
-
   /* ─── ANIMATIONS ─── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
   .stagger > * {
     opacity: 0;
-    animation: fadeUp 0.4s ease forwards;
+    animation: fadeUp 0.35s ease forwards;
   }
   .stagger > *:nth-child(1) { animation-delay: 0s; }
-  .stagger > *:nth-child(2) { animation-delay: 0.05s; }
-  .stagger > *:nth-child(3) { animation-delay: 0.1s; }
-  .stagger > *:nth-child(4) { animation-delay: 0.15s; }
-  .stagger > *:nth-child(5) { animation-delay: 0.2s; }
-  .stagger > *:nth-child(6) { animation-delay: 0.25s; }
-
-  /* ─── TABS ─── */
-  .demo-tabs {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 24px;
+  .stagger > *:nth-child(2) { animation-delay: 0.04s; }
+  .stagger > *:nth-child(3) { animation-delay: 0.08s; }
+  .stagger > *:nth-child(4) { animation-delay: 0.12s; }
+  .stagger > *:nth-child(5) { animation-delay: 0.16s; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-  .demo-tab {
-    padding: 8px 18px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    transition: all 0.2s;
-    background: transparent;
-    color: var(--purple);
-    border: none;
-    font-family: var(--font);
-  }
-  .demo-tab:hover { background: #1a1a1a; color: var(--white); }
-  .demo-tab.active { background: var(--purple); color: var(--white); }
-  .demo-pane { display: none; }
-  .demo-pane.active { display: block; }
 
   /* ─── FOOTER ─── */
   .footer {
-    padding: 40px 60px;
-    border-top: 1px solid #1a1a1a;
+    padding: 32px 40px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
     color: var(--purple);
     font-size: 12px;
   }
-  .footer a { color: var(--red); text-decoration: none; }
 </style>
 </head>
 <body>
 
-<!-- ─── HERO ─── -->
-<div class="hero">
-  <div class="hero-tag">UI Component Preview</div>
-  <h1><span class="accent">O</span><sub style="font-size:0.5em;color:var(--purple)">2</sub> Oxygen<br>Scripts</h1>
-  <p>ERP automation toolkit for Pelatologio.gr. Every widget, every state, one cohesive system.</p>
-  <span class="version-pill">v2.0.0</span>
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="top-bar-left">
+    <span class="logo"><span class="accent">O</span><sub style="font-size:0.55em;color:var(--purple)">2</sub> Oxygen Scripts</span>
+    <span class="version-pill">v2.0.0</span>
+  </div>
+  <div class="top-bar-right">
+    <div class="palette-dot" style="background:var(--red)"></div>
+    <div class="palette-dot" style="background:var(--green)"></div>
+    <div class="palette-dot" style="background:var(--purple)"></div>
+    <div class="palette-dot" style="background:var(--black)"></div>
+    <div class="palette-dot" style="background:var(--white)"></div>
+  </div>
 </div>
 
-<!-- ─── PALETTE ─── -->
-<div class="palette">
-  <div class="palette-swatch s-red">#D35155</div>
-  <div class="palette-swatch s-green">#008582</div>
-  <div class="palette-swatch s-purple">#815f88</div>
-  <div class="palette-swatch s-black">#000000</div>
-  <div class="palette-swatch s-white">#FFFFFF</div>
-</div>
-
-<!-- ─── SECTION: FLOATING PANEL ─── -->
+<!-- ─── SECTION 1: FLOATING PANEL ─── -->
 <div class="section">
-  <div class="section-label">01 / Component</div>
-  <h2 class="section-title">Floating Panel</h2>
-  <p class="section-desc">Docked right-side panel with contextual actions. Click the header to toggle. Buttons register dynamically per page.</p>
+  <div class="section-label">01 — Floating Panel</div>
+  <h2 class="section-title">Side Panel</h2>
+  <p class="section-desc">Docked right. Click header to collapse. Actions register per page. Dark on light for max contrast.</p>
 
-  <div class="demo-tabs">
-    <button class="demo-tab active" onclick="showPanelState('expanded')">Expanded</button>
-    <button class="demo-tab" onclick="showPanelState('collapsed')">Collapsed</button>
-    <button class="demo-tab" onclick="showPanelState('active')">Active State</button>
-    <button class="demo-tab" onclick="showPanelState('running')">Running State</button>
+  <div class="tabs" id="panel-tabs">
+    <button class="tab active" onclick="panelState('open',this)">Open</button>
+    <button class="tab" onclick="panelState('collapsed',this)">Collapsed</button>
+    <button class="tab" onclick="panelState('active',this)">Done</button>
+    <button class="tab" onclick="panelState('running',this)">Running</button>
   </div>
 
-  <div class="stage" style="min-height: 340px;">
-    <div style="color:var(--purple);font-size:12px;opacity:0.5;position:absolute;left:40px;top:40px;">ERP page content area</div>
-
+  <div class="stage" style="min-height:300px">
+    <div style="color:var(--purple);font-size:12px;opacity:0.4">Simulated ERP page</div>
     <div id="demo-panel">
       <div class="dp-header" onclick="document.getElementById('demo-panel').classList.toggle('collapsed')">
-        <span class="dp-title">O<sub style="font-size:0.6em">2</sub></span>
-        <span class="dp-version">v2.0.0</span>
+        <span class="dp-logo">O<sub style="font-size:0.6em">2</sub></span>
+        <span class="dp-ver">v2.0.0</span>
       </div>
-      <div class="dp-btn" id="dp-btn-units"><span class="dp-icon">&#9878;</span><span class="dp-label">Re-select Units</span></div>
-      <div class="dp-btn" id="dp-btn-card"><span class="dp-icon">&#128179;</span><span class="dp-label">Κάρτα</span></div>
-      <div class="dp-btn" id="dp-btn-cod"><span class="dp-icon">&#128230;</span><span class="dp-label">Αντικαταβολή</span></div>
-      <div class="dp-btn" id="dp-btn-dup"><span class="dp-icon">&#128203;</span><span class="dp-label">Αντιγραφή</span></div>
+      <div class="dp-btn" id="dp0"><span class="dp-icon">&#9878;</span><span class="dp-label">Re-select Units</span></div>
+      <div class="dp-btn" id="dp1"><span class="dp-icon">&#128179;</span><span class="dp-label">Κάρτα</span></div>
+      <div class="dp-btn" id="dp2"><span class="dp-icon">&#128230;</span><span class="dp-label">Αντικαταβολή</span></div>
+      <div class="dp-btn" id="dp3"><span class="dp-icon">&#128203;</span><span class="dp-label">Αντιγραφή</span></div>
     </div>
   </div>
 </div>
 
-<!-- ─── SECTION: NOTICE BUTTONS ─── -->
+<!-- ─── SECTION 2: NOTICE BUTTONS ─── -->
 <div class="section">
-  <div class="section-label">02 / Component</div>
-  <h2 class="section-title">Notice Row Buttons</h2>
-  <p class="section-desc">Inline action buttons on each notice row. Red for receipt (ΑΠ), green for invoice (ΤΙΜ). One click opens a new tab with the converted document.</p>
+  <div class="section-label">02 — Notice Actions</div>
+  <h2 class="section-title">Row Buttons</h2>
+  <p class="section-desc">ΑΠ = receipt (red), ΤΙΜ = invoice (green). One click opens new tab.</p>
 
   <div class="stage">
     <table class="demo-table">
       <thead>
         <tr>
-          <th style="width:100px">Actions</th>
+          <th style="width:90px"></th>
           <th>No</th>
           <th>Customer</th>
-          <th>Description</th>
-          <th style="text-align:right">Amount</th>
+          <th>Products</th>
+          <th style="text-align:right">Total</th>
         </tr>
       </thead>
       <tbody class="stagger">
@@ -674,80 +590,91 @@
           <td><span class="row-btn btn-ap">ΑΠ</span><span class="row-btn btn-tim">ΤΙΜ</span></td>
           <td class="notice-id">EIΔ 3771</td>
           <td class="notice-name">Nikolaos Georgiadis</td>
-          <td style="color:var(--purple)">Greek coffee mastic - 250g</td>
-          <td class="notice-amount">38.00</td>
+          <td class="notice-desc">Greek coffee mastic — 250g</td>
+          <td class="notice-amount">&euro; 38.00</td>
         </tr>
         <tr>
           <td><span class="row-btn btn-ap">ΑΠ</span><span class="row-btn btn-tim">ΤΙΜ</span></td>
           <td class="notice-id">EIΔ 3769</td>
           <td class="notice-name">Grigoris Psargianos</td>
-          <td style="color:var(--purple)">Espresso hazelnut - 250g</td>
-          <td class="notice-amount">34.20</td>
+          <td class="notice-desc">Espresso hazelnut — 250g</td>
+          <td class="notice-amount">&euro; 34.20</td>
         </tr>
         <tr>
           <td><span class="row-btn btn-ap">ΑΠ</span><span class="row-btn btn-tim">ΤΙΜ</span></td>
           <td class="notice-id">EIΔ 3768</td>
           <td class="notice-name">Maria Petropoulou</td>
-          <td style="color:var(--purple)">Toffee caramels assorted - 500g</td>
-          <td class="notice-amount">27.40</td>
+          <td class="notice-desc">Toffee caramels — 500g</td>
+          <td class="notice-amount">&euro; 27.40</td>
         </tr>
         <tr>
           <td><span class="row-btn btn-ap">ΑΠ</span><span class="row-btn btn-tim">ΤΙΜ</span></td>
           <td class="notice-id">EIΔ 3767</td>
           <td class="notice-name">Eva Pediaditaki</td>
-          <td style="color:var(--purple)">Jelly caramels strawberry - 1000g</td>
-          <td class="notice-amount">126.50</td>
+          <td class="notice-desc">Jelly caramels strawberry — 1kg</td>
+          <td class="notice-amount">&euro; 126.50</td>
         </tr>
         <tr>
           <td><span class="row-btn btn-ap">ΑΠ</span><span class="row-btn btn-tim">ΤΙΜ</span></td>
           <td class="notice-id">EIΔ 3766</td>
           <td class="notice-name">Kostas Plakotaris</td>
-          <td style="color:var(--purple)">Greek coffee classic - 250g</td>
-          <td class="notice-amount">167.00</td>
+          <td class="notice-desc">Greek coffee classic — 250g</td>
+          <td class="notice-amount">&euro; 167.00</td>
         </tr>
       </tbody>
     </table>
   </div>
 </div>
 
-<!-- ─── SECTION: DUPLICATE DIALOG ─── -->
+<!-- ─── SECTION 3: DUPLICATE DIALOG ─── -->
 <div class="section">
-  <div class="section-label">03 / Component</div>
-  <h2 class="section-title">Duplicate Dialog</h2>
-  <p class="section-desc">Search for a customer, pick their last invoice or receipt, and duplicate it in one click. Three AJAX calls replace eight UI clicks.</p>
+  <div class="section-label">03 — Duplicate Document</div>
+  <h2 class="section-title">Search &amp; Duplicate</h2>
+  <p class="section-desc">Search customer, pick last invoice/receipt, duplicate in one click. Replaces 8 UI clicks with 3.</p>
 
-  <div class="demo-tabs">
-    <button class="demo-tab active" onclick="showDupState('search')">Customer Search</button>
-    <button class="demo-tab" onclick="showDupState('invoices')">Invoice List</button>
+  <div class="tabs" id="dup-tabs">
+    <button class="tab active" onclick="dupState('search',this)">Customer Search</button>
+    <button class="tab" onclick="dupState('invoices',this)">Invoice List</button>
   </div>
 
-  <div class="stage">
+  <div class="stage stage-dark">
     <!-- Search state -->
-    <div id="dup-search" class="demo-pane active">
-      <div class="dup-overlay">
+    <div id="pane-search" class="pane active">
+      <div class="dup-wrap">
         <div class="dup-dialog">
           <div class="dup-header">
-            <div class="dup-header-left">
-              <div class="dup-header-icon">&#128203;</div>
-              <span>Duplicate Document</span>
-            </div>
+            <div class="dup-header-left"><div class="dup-header-dot"></div> Αντιγραφή παραστατικού</div>
             <div class="dup-close">&times;</div>
           </div>
           <div class="dup-body">
             <div class="dup-input-wrap">
-              <span class="dup-input-icon">&#128269;</span>
+              <span class="dup-search-icon">&#128269;</span>
               <input class="dup-input" placeholder="Search customer..." value="Ξυντ">
             </div>
-            <div class="dup-results stagger">
-              <div class="dup-item">
-                <div class="dup-item-left">
-                  <div class="dup-item-avatar">ΓΞ</div>
-                  <div>
-                    <div class="dup-item-name">Georgia Xyntara</div>
-                    <div class="dup-item-code">30.00000035</div>
-                  </div>
+            <div class="stagger">
+              <div class="dup-customer">
+                <div class="dup-avatar">ΓΞ</div>
+                <div>
+                  <div class="dup-cust-name">Georgia Xyntara</div>
+                  <div class="dup-cust-code">30.00000035</div>
                 </div>
-                <span class="dup-item-arrow">&#8250;</span>
+                <span class="dup-cust-arrow">&#8250;</span>
+              </div>
+              <div class="dup-customer">
+                <div class="dup-avatar" style="background:var(--green)">ΝΓ</div>
+                <div>
+                  <div class="dup-cust-name">Nikolaos Georgiadis</div>
+                  <div class="dup-cust-code">50.0002</div>
+                </div>
+                <span class="dup-cust-arrow">&#8250;</span>
+              </div>
+              <div class="dup-customer">
+                <div class="dup-avatar" style="background:var(--red)">ΜΠ</div>
+                <div>
+                  <div class="dup-cust-name">Maria Petropoulou</div>
+                  <div class="dup-cust-code">30.00000014</div>
+                </div>
+                <span class="dup-cust-arrow">&#8250;</span>
               </div>
             </div>
           </div>
@@ -756,55 +683,52 @@
     </div>
 
     <!-- Invoice list state -->
-    <div id="dup-invoices" class="demo-pane">
-      <div class="dup-overlay">
+    <div id="pane-invoices" class="pane">
+      <div class="dup-wrap">
         <div class="dup-dialog">
           <div class="dup-header">
-            <div class="dup-header-left">
-              <div class="dup-header-icon">&#128203;</div>
-              <span>Duplicate Document</span>
-            </div>
+            <div class="dup-header-left"><div class="dup-header-dot"></div> Αντιγραφή παραστατικού</div>
             <div class="dup-close">&times;</div>
           </div>
           <div class="dup-body">
-            <div class="dup-back">&#8249; Back to search</div>
-            <div class="dup-customer-name">Georgia Xyntara</div>
+            <div class="dup-back-link">&#8249; Back</div>
+            <div class="dup-cust-heading">Georgia Xyntara</div>
             <div class="stagger">
-              <div class="dup-inv-item">
+              <div class="dup-invoice">
                 <div class="dup-inv-left">
-                  <span class="dup-inv-badge receipt">AΛΠ</span>
+                  <span class="dup-badge receipt">AΛΠ</span>
                   <div>
-                    <div class="dup-inv-detail">No <strong>3011</strong></div>
+                    <div class="dup-inv-no">No <strong>3011</strong></div>
                     <div class="dup-inv-date">28/12/2025</div>
                   </div>
                 </div>
                 <div class="dup-inv-amount">&euro; 35.12</div>
               </div>
-              <div class="dup-inv-item">
+              <div class="dup-invoice">
                 <div class="dup-inv-left">
-                  <span class="dup-inv-badge receipt">AΛΠ</span>
+                  <span class="dup-badge receipt">AΛΠ</span>
                   <div>
-                    <div class="dup-inv-detail">No <strong>3001</strong></div>
+                    <div class="dup-inv-no">No <strong>3001</strong></div>
                     <div class="dup-inv-date">26/12/2025</div>
                   </div>
                 </div>
                 <div class="dup-inv-amount">&euro; 43.90</div>
               </div>
-              <div class="dup-inv-item">
+              <div class="dup-invoice">
                 <div class="dup-inv-left">
-                  <span class="dup-inv-badge invoice">ΤΙΜ</span>
+                  <span class="dup-badge invoice">ΤΙΜ</span>
                   <div>
-                    <div class="dup-inv-detail">No <strong>2405</strong></div>
+                    <div class="dup-inv-no">No <strong>2405</strong></div>
                     <div class="dup-inv-date">29/10/2025</div>
                   </div>
                 </div>
                 <div class="dup-inv-amount">&euro; 31.20</div>
               </div>
-              <div class="dup-inv-item">
+              <div class="dup-invoice">
                 <div class="dup-inv-left">
-                  <span class="dup-inv-badge receipt">AΛΠ</span>
+                  <span class="dup-badge receipt">AΛΠ</span>
                   <div>
-                    <div class="dup-inv-detail">No <strong>2082</strong></div>
+                    <div class="dup-inv-no">No <strong>2082</strong></div>
                     <div class="dup-inv-date">19/09/2025</div>
                   </div>
                 </div>
@@ -818,54 +742,41 @@
   </div>
 </div>
 
-<!-- ─── FOOTER ─── -->
+<!-- FOOTER -->
 <div class="footer">
-  <span>Oxygen Scripts &mdash; Built for <a href="#">Rizopoulos Coffee 1901</a></span>
-  <span style="font-family:var(--mono);font-size:10px;">v2.0.0</span>
+  <span>Oxygen Scripts — Built for Rizopoulos Coffee 1901</span>
+  <span style="font-family:var(--mono);font-size:10px">v2.0.0</span>
 </div>
 
 <script>
-  // Panel state demos
-  function showPanelState(state) {
-    document.querySelectorAll('.section:nth-child(3) .demo-tab').forEach(t => t.classList.remove('active'));
-    event.target.classList.add('active');
+function panelState(state, el) {
+  document.querySelectorAll('#panel-tabs .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const p = document.getElementById('demo-panel');
+  const btns = p.querySelectorAll('.dp-btn');
+  p.classList.remove('collapsed');
+  btns.forEach(b=>b.classList.remove('active','running'));
+  if (state==='collapsed') p.classList.add('collapsed');
+  if (state==='active') btns[0].classList.add('active');
+  if (state==='running') btns[1].classList.add('running');
+}
 
-    const panel = document.getElementById('demo-panel');
-    const btns = panel.querySelectorAll('.dp-btn');
+function dupState(state, el) {
+  document.querySelectorAll('#dup-tabs .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('pane-search').classList.remove('active');
+  document.getElementById('pane-invoices').classList.remove('active');
+  document.getElementById('pane-'+(state==='search'?'search':'invoices')).classList.add('active');
+}
 
-    panel.classList.remove('collapsed');
-    btns.forEach(b => { b.classList.remove('active', 'running'); });
-
-    if (state === 'collapsed') {
-      panel.classList.add('collapsed');
-    } else if (state === 'active') {
-      btns[0].classList.add('active');
-    } else if (state === 'running') {
-      btns[1].classList.add('running');
-    }
-  }
-
-  // Duplicate dialog state demos
-  function showDupState(state) {
-    document.querySelectorAll('.section:nth-child(5) .demo-tab').forEach(t => t.classList.remove('active'));
-    event.target.classList.add('active');
-    document.getElementById('dup-search').classList.remove('active');
-    document.getElementById('dup-invoices').classList.remove('active');
-    document.getElementById('dup-' + (state === 'search' ? 'search' : 'invoices')).classList.add('active');
-  }
-
-  // Add hover feedback to row buttons
-  document.querySelectorAll('.row-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      btn.style.background = 'var(--purple)';
-      btn.textContent = '...';
-      setTimeout(() => {
-        btn.style.background = '';
-        btn.textContent = btn.classList.contains('btn-ap') ? 'ΑΠ' : 'ΤΙΜ';
-      }, 800);
-    });
+document.querySelectorAll('.row-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const orig = b.textContent;
+    b.style.background='var(--purple)';
+    b.textContent='...';
+    setTimeout(()=>{ b.style.background=''; b.textContent=orig; },700);
   });
+});
 </script>
-
 </body>
 </html>
