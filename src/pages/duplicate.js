@@ -174,6 +174,9 @@
       color: #815f88;
       font-size: 13px;
     }
+    .o-dup-highlight {
+      background: #f0ecf1 !important;
+    }
     .o-dup-flash {
       background: #D35155 !important;
       color: #fff !important;
