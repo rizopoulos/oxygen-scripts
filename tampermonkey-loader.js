@@ -49,9 +49,14 @@
       var url = window.location.href;
       var matched = routes.filter(function(r) { return url.indexOf(r.pattern) !== -1; });
 
-      // Load control panel only on pages that have scripts
-      if (matched.length > 0) {
+      // Load control panel and global scripts on pages with routes OR on any ERP page
+      if (matched.length > 0 || url.indexOf('app.pelatologio.gr') !== -1) {
         await loadAndRun('lib/panel.js');
+
+        for (var g = 0; g < globalScripts.length; g++) {
+          console.log('[Oxygen] Loading ' + globalScripts[g]);
+          await loadAndRun(globalScripts[g]);
+        }
       }
 
       for (var i = 0; i < matched.length; i++) {
@@ -59,7 +64,7 @@
         await loadAndRun(matched[i].script);
       }
 
-      if (matched.length > 0) console.log('[Oxygen] v' + VERSION + ' ready');
+      console.log('[Oxygen] v' + VERSION + ' ready');
     } catch (err) {
       console.error('[Oxygen] Error: ' + err.message);
     }
