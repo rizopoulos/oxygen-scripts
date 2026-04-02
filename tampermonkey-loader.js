@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Oxygen ERP Scripts
 // @namespace    https://github.com/rizopoulos/oxygen-scripts
-// @version      2.1.0
+// @version      2.1.1
 // @description  Automates repetitive workflows in Oxygen ERP (Pelatologio.gr)
 // @match        https://app.pelatologio.gr/*
 // @grant        none
@@ -9,7 +9,7 @@
 // ==/UserScript==
 
 (function () {
-  const VERSION = '2.1.0';
+  const VERSION = '2.1.1';
   const BASE = 'https://raw.githubusercontent.com/rizopoulos/oxygen-scripts/main/src';
   const CACHE_BUST = '?v=' + VERSION;
 
