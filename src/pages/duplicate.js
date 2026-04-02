@@ -363,20 +363,21 @@
       container.appendChild(back);
 
       const title = document.createElement('div');
-      title.style.cssText = 'font-weight:700; margin-bottom:8px; font-size:13px;';
+      title.className = 'o-dup-customer-name';
       title.textContent = customer.name;
       container.appendChild(title);
 
       for (const inv of invoices) {
         const item = document.createElement('div');
-        item.className = 'o-dup-item';
+        item.className = 'o-dup-inv-item';
         const typeClass = inv.isReceipt ? 'o-dup-type-receipt' : 'o-dup-type-invoice';
         item.innerHTML = `
-          <span>
-            <span class="o-dup-item-type ${typeClass}">${inv.typeCode}</span>
-            <span class="o-dup-item-detail">${inv.date} — Νο ${inv.number}</span>
-          </span>
-          <span class="o-dup-item-amount">€ ${inv.amount}</span>
+          <span class="o-dup-item-type ${typeClass}">${inv.typeCode}</span>
+          <div>
+            <div class="o-dup-item-detail">No ${inv.number}</div>
+            <div class="o-dup-item-date">${inv.date}</div>
+          </div>
+          <span class="o-dup-item-amount">\u20ac ${inv.amount}</span>
         `;
         item.addEventListener('click', () => {
           // Duplicate as same type: receipt→receipt, invoice→invoice
