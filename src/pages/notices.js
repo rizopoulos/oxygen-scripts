@@ -8,9 +8,7 @@
 (function () {
   'use strict';
 
-  const { sleep, waitForVisibleLink, injectCSS, log, error } = OxygenUtils;
-
-  const DELAY_MODAL = 800;
+  const { injectCSS, log, error } = OxygenUtils;
 
   // Inject styles for our custom buttons
   injectCSS('oxygen-notices-css', `
@@ -45,46 +43,42 @@
     }
   `);
 
-  // Run the full conversion sequence for a specific row.
-  // The row's hidden .cMenuBox contains all action links already in the DOM.
-  // We click the "Απόδειξης" link directly (data-action="notices-converte_to_invoice"),
-  // which opens the modal, then we click "Μετατροπή".
-  async function convertRow(row, btn) {
+  // Convert a notice to receipt by navigating directly to the receipt URL.
+  // The notice's data-docid attribute holds the notice_temp_id needed for the URL.
+  function convertRow(row, btn) {
     const idLink = row.querySelector('a');
     const noticeId = idLink ? idLink.textContent.trim() : 'unknown';
-    log(`Converting ${noticeId} to receipt...`);
+
+    // Get the notice_temp_id from the Απόδειξης link's data-docid attribute
+    const apodeixisLink = row.querySelector('a[data-action="notices-converte_to_invoice"][data-action2="receipt"]');
+    if (!apodeixisLink) {
+      error(`${noticeId}: "Απόδειξης" link not found in row`);
+      alert('Conversion failed: link not found in row');
+      return;
+    }
+
+    const tempId = apodeixisLink.getAttribute('data-docid');
+    if (!tempId) {
+      error(`${noticeId}: no data-docid found`);
+      alert('Conversion failed: no document ID found');
+      return;
+    }
+
+    log(`Converting ${noticeId} (temp_id=${tempId}) to receipt...`);
     btn.classList.add('running');
     btn.textContent = '...';
 
-    try {
-      // Step 1: Find the "Απόδειξης" link directly in the row's hidden menu
-      const apodeixisLink = row.querySelector('a[data-action="notices-converte_to_invoice"][data-action2="receipt"]');
-      if (!apodeixisLink) throw new Error('"Απόδειξης" link not found in row');
-
-      // Temporarily show the menu so the click handler works
-      const menuBox = row.querySelector('.cMenuBox');
-      if (menuBox) menuBox.classList.remove('hidden');
-
-      apodeixisLink.click();
-      log('Clicked Απόδειξης directly');
-
-      // Re-hide the menu
-      if (menuBox) menuBox.classList.add('hidden');
-
-      await sleep(DELAY_MODAL);
-
-      // Step 2: Click "Μετατροπή" in the modal
-      const metatropiBtn = await waitForVisibleLink('Μετατροπή', 3000);
-      if (!metatropiBtn) throw new Error('"Μετατροπή" not found in modal');
-      metatropiBtn.click();
-      log(`${noticeId} → Μετατροπή clicked, redirecting to receipt form...`);
-
-    } catch (err) {
-      error(`Failed: ${err.message}`);
-      btn.classList.remove('running');
-      btn.textContent = 'ΑΠ';
-      alert(`Conversion failed: ${err.message}`);
-    }
+    // Navigate directly — no modal, no clicks
+    const params = new URLSearchParams({
+      notice_temp_id: tempId,
+      use_template: 'yes',
+      same_products: 'yes',
+      same_customer: 'yes',
+      same_category: 'yes',
+      same_rules: 'yes',
+      mark_notice_complete: 'yes',
+    });
+    window.location.href = `https://app.pelatologio.gr/receipts_new.php?${params}`;
   }
 
   // Inject buttons into each notice row
@@ -122,16 +116,20 @@
     }
   }
 
-  // Run
-  injectButtons();
-
-  // Also re-inject if the table updates dynamically (e.g., filtering/pagination)
-  const observer = new MutationObserver(() => {
+  // Wait for table rows to exist, then inject buttons.
+  // Handles both immediate rendering and dynamic/late table loading.
+  function waitAndInject() {
+    // Try immediately
     injectButtons();
-  });
-  const tableContainer = document.querySelector('table')?.parentElement;
-  if (tableContainer) {
-    observer.observe(tableContainer, { childList: true, subtree: true });
+
+    // Also observe for dynamic updates (pagination, filtering, late rendering)
+    const target = document.querySelector('table')?.parentElement || document.body;
+    const observer = new MutationObserver(() => {
+      injectButtons();
+    });
+    observer.observe(target, { childList: true, subtree: true });
   }
+
+  waitAndInject();
 
 })();
