@@ -155,7 +155,7 @@
 
   // Register buttons on control panel
   if (window.OxygenPanel) {
-    OxygenPanel.addButton('⚖', 'Re-select Units', async (btn) => {
+    OxygenPanel.addButton('⚖', 'Units', async (btn) => {
       OxygenPanel.setButtonState(btn, 'running');
       await reselectAllUnits();
       OxygenPanel.setButtonState(btn, 'active');
