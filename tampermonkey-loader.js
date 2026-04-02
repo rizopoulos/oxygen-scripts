@@ -20,6 +20,11 @@
     { pattern: 'invoices_new.php', script: 'pages/receipt-new.js' },
   ];
 
+  // Scripts loaded on ALL pages that have the panel
+  const globalScripts = [
+    'pages/duplicate.js',
+  ];
+
   async function loadAndRun(path) {
     const resp = await fetch(BASE + '/' + path + CACHE_BUST);
     if (!resp.ok) { console.error('[Oxygen] Failed to load ' + path + ': ' + resp.status); return; }
