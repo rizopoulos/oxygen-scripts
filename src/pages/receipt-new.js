@@ -122,11 +122,54 @@
     }
   }
 
-  // Register button on control panel
+  // Set select2 value and trigger change so select2 updates its UI
+  function setSelect2Value(selector, value) {
+    const el = document.querySelector(selector);
+    if (!el) { error(`${selector} not found`); return false; }
+    el.value = value;
+    // Trigger change for both native and jQuery/select2
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+    if (window.jQuery) jQuery(el).val(value).trigger('change');
+    log(`Set ${selector} = ${value}`);
+    return true;
+  }
+
+  // Set payment method, click "paid yes", then create invoice
+  async function payAndCreate(methodValue, methodLabel) {
+    log(`${methodLabel}: setting payment method to ${methodValue}...`);
+
+    if (!setSelect2Value('#invoice_payment_method', methodValue)) return;
+    await sleep(300);
+
+    const paidBtn = document.querySelector('#btnCheckPayed_yes');
+    if (!paidBtn) { error('#btnCheckPayed_yes not found'); return; }
+    paidBtn.click();
+    log('Clicked "Paid Yes"');
+    await sleep(300);
+
+    const createBtn = document.querySelector('#btnCreateInvoice');
+    if (!createBtn) { error('#btnCreateInvoice not found'); return; }
+    createBtn.click();
+    log('Clicked "Create Invoice"');
+  }
+
+  // Register buttons on control panel
   if (window.OxygenPanel) {
     OxygenPanel.addButton('⚖', 'Re-select Units', async (btn) => {
       OxygenPanel.setButtonState(btn, 'running');
       await reselectAllUnits();
+      OxygenPanel.setButtonState(btn, 'active');
+    });
+
+    OxygenPanel.addButton('💳', 'Πληρωμή με κάρτα', async (btn) => {
+      OxygenPanel.setButtonState(btn, 'running');
+      await payAndCreate(8, 'Κάρτα');
+      OxygenPanel.setButtonState(btn, 'active');
+    });
+
+    OxygenPanel.addButton('📦', 'Πληρωμή με αντικαταβολή', async (btn) => {
+      OxygenPanel.setButtonState(btn, 'running');
+      await payAndCreate(1, 'Αντικαταβολή');
       OxygenPanel.setButtonState(btn, 'active');
     });
   }
