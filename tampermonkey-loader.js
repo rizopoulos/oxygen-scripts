@@ -17,6 +17,7 @@
   const routes = [
     { pattern: 'notices.php',      script: 'pages/notices.js' },
     { pattern: 'receipts_new.php', script: 'pages/receipt-new.js' },
+    { pattern: 'invoices_new.php', script: 'pages/receipt-new.js' },
   ];
 
   async function loadAndRun(path) {
