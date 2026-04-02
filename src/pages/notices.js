@@ -18,9 +18,9 @@
       justify-content: center;
       width: 26px;
       height: 26px;
-      border: 1px solid #e0a800;
-      background: #fff3cd;
-      color: #856404;
+      border: 1px solid #D35155;
+      background: #fff;
+      color: #D35155;
       border-radius: 4px;
       cursor: pointer;
       font-size: 10px;
@@ -31,12 +31,12 @@
       line-height: 1;
     }
     .oxygen-btn:hover {
-      background: #e0a800;
+      background: #D35155;
       color: #fff;
     }
     .oxygen-btn.running {
-      background: #007bff;
-      border-color: #007bff;
+      background: #815f88;
+      border-color: #815f88;
       color: #fff;
       pointer-events: none;
       opacity: 0.7;
