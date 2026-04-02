@@ -23,13 +23,13 @@
     }
     .o-dup-dialog {
       background: #fff;
-      border-radius: 12px;
-      width: 500px;
+      border-radius: 4px;
+      width: 460px;
       max-height: 70vh;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
     .o-dup-header {
@@ -37,72 +37,132 @@
       color: #fff;
       padding: 14px 18px;
       font-weight: 700;
-      font-size: 14px;
+      font-size: 13px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .o-dup-close {
-      color: #D35155;
-      cursor: pointer;
-      font-size: 20px;
-      font-weight: bold;
-      line-height: 1;
+    .o-dup-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .o-dup-close:hover { color: #fff; }
+    .o-dup-header-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #D35155;
+    }
+    .o-dup-close {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #815f88;
+      font-size: 16px;
+      transition: all 0.15s;
+    }
+    .o-dup-close:hover { background: #D35155; color: #fff; }
     .o-dup-body {
-      padding: 14px 18px;
+      padding: 16px 18px;
       overflow-y: auto;
       flex: 1;
     }
     .o-dup-input {
       width: 100%;
-      padding: 10px 12px;
-      border: 2px solid #815f88;
-      border-radius: 8px;
-      font-size: 14px;
+      padding: 11px 12px;
+      border: 2px solid #e8e0eb;
+      border-radius: 4px;
+      font-size: 13px;
       outline: none;
       box-sizing: border-box;
+      font-family: inherit;
     }
     .o-dup-input:focus { border-color: #D35155; }
     .o-dup-results {
-      margin-top: 10px;
+      margin-top: 12px;
     }
     .o-dup-item {
-      padding: 10px 12px;
-      border-radius: 6px;
+      padding: 10px;
+      border-radius: 4px;
       cursor: pointer;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      transition: background 0.1s;
+      gap: 10px;
+      transition: background 0.12s;
       font-size: 13px;
+      margin-bottom: 2px;
     }
-    .o-dup-item:hover { background: #f0f0f0; }
-    .o-dup-item-name { font-weight: 600; color: #000; }
-    .o-dup-item-code { color: #815f88; font-size: 11px; }
-    .o-dup-item-detail { color: #000; font-size: 12px; }
-    .o-dup-item-amount { color: #008582; font-weight: 600; }
-    .o-dup-item-date { color: #815f88; font-size: 11px; }
+    .o-dup-item:hover { background: #f8f5f9; }
+    .o-dup-item-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 4px;
+      background: #815f88;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+    .o-dup-item-info { flex: 1; }
+    .o-dup-item-name { font-weight: 700; font-size: 13px; color: #000; }
+    .o-dup-item-contact { font-size: 11px; color: #815f88; margin-top: 1px; }
+    .o-dup-item-arrow { color: #815f88; font-size: 16px; transition: all 0.15s; }
+    .o-dup-item:hover .o-dup-item-arrow { transform: translateX(3px); color: #D35155; }
+    .o-dup-item-detail { color: #000; font-size: 13px; font-weight: 600; }
+    .o-dup-item-date { font-size: 11px; color: #815f88; margin-top: 1px; }
+    .o-dup-item-amount { color: #008582; font-weight: 700; font-size: 14px; margin-left: auto; }
     .o-dup-item-type {
       display: inline-block;
-      padding: 1px 6px;
+      padding: 3px 7px;
       border-radius: 4px;
       font-size: 10px;
-      font-weight: 700;
+      font-weight: 800;
       color: #fff;
-      margin-right: 6px;
+      margin-right: 8px;
+      flex-shrink: 0;
     }
     .o-dup-type-receipt { background: #D35155; }
     .o-dup-type-invoice { background: #008582; }
+    .o-dup-inv-item {
+      padding: 12px;
+      border-radius: 4px;
+      border: 1px solid #f0ecf1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.15s;
+      margin-bottom: 5px;
+    }
+    .o-dup-inv-item:hover {
+      border-color: #815f88;
+      background: #fdfafe;
+      transform: translateX(3px);
+    }
     .o-dup-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
       color: #815f88;
       cursor: pointer;
       font-size: 12px;
-      margin-bottom: 8px;
-      display: inline-block;
+      font-weight: 600;
+      margin-bottom: 10px;
     }
     .o-dup-back:hover { color: #D35155; }
+    .o-dup-customer-name {
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: #000;
+    }
     .o-dup-loading {
       text-align: center;
       padding: 20px;
