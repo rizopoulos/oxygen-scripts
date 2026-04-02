@@ -21,7 +21,7 @@
       border: none;
       background: #D35155;
       color: #fff;
-      border-radius: 6px;
+      border-radius: 4px;
       cursor: pointer;
       font-size: 10px;
       font-weight: 700;
