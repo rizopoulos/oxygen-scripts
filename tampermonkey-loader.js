@@ -11,7 +11,7 @@
 (function () {
   const VERSION = '2.1.2';
   const BASE = 'https://raw.githubusercontent.com/rizopoulos/oxygen-scripts/main/src';
-  const CACHE_BUST = '?v=' + VERSION;
+  const CACHE_BUST = '?v=' + VERSION + '&_=' + Date.now();
 
   // Route table: URL pattern → script path
   const routes = [
