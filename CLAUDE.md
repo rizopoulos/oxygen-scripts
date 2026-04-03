@@ -34,13 +34,24 @@ Scripts are fetched from `raw.githubusercontent.com` and injected as `<script>` 
 - **Real business data**: Never trigger document creation (clicking "Δημιουργία Απόδειξης" creates real tax documents).
 - **Payment values**: Card=8, COD=1 (for `#invoice_payment_method` select2).
 
-## Version Bumping
+## Git Workflow (Mandatory)
 
-Every change that affects runtime behavior **must** bump `VERSION` in `tampermonkey-loader.js` (both the `@version` header on line 4 and the `const VERSION` on line 12). The user manually updates these two values in their Tampermonkey copy.
+**On every code change, you MUST commit and push to GitHub.** Do not ask for permission — just do it.
 
-## Auto-Commit Hook
+After every push, run `git log --oneline -3` and show the output in chat as proof.
 
-A PostToolUse hook in `.claude/settings.local.json` auto-commits and pushes on every Write/Edit. No manual git operations needed. After changes, show `git log --oneline -3` output as proof of push.
+## Version Bumping (Mandatory)
+
+**On every change, bump the version** in `tampermonkey-loader.js` in both places:
+- Line 4: `// @version X.Y.Z`
+- Line 12: `const VERSION = 'X.Y.Z';`
+
+Use **semantic versioning**:
+- **Patch** (2.2.0 → 2.2.1): bug fixes, CSS tweaks, minor adjustments
+- **Minor** (2.2.1 → 2.3.0): new features, new page scripts, new panel buttons
+- **Major** (2.3.0 → 3.0.0): breaking changes to architecture or loader
+
+Always bump the version as the **last edit** before committing, so the push includes it.
 
 ## Adding a New Page Script
 
