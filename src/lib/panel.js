@@ -186,7 +186,7 @@
     addButton(icon, label, onClick) {
       const btn = document.createElement('div');
       btn.className = 'o-btn';
-      btn.title = label;
+      btn.setAttribute('data-label', label);
       btn.innerHTML = '<span class="o-icon">' + icon + '</span><span class="o-label">' + label + '</span>';
       btn.addEventListener('click', () => onClick(btn));
       grid.appendChild(btn);
