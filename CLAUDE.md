@@ -42,14 +42,14 @@ After every push, run `git log --oneline -3` and show the output in chat as proo
 
 ## Version Bumping (Mandatory)
 
-**On every change, bump the version** in `tampermonkey-loader.js` in both places:
-- Line 4: `// @version X.Y.Z`
-- Line 12: `const VERSION = 'X.Y.Z';`
+**On every change, bump the version** in `version.json` (the single source of truth). The loader fetches this dynamically from GitHub — the user never edits Tampermonkey.
 
 Use **semantic versioning**:
-- **Patch** (2.2.0 → 2.2.1): bug fixes, CSS tweaks, minor adjustments
-- **Minor** (2.2.1 → 2.3.0): new features, new page scripts, new panel buttons
-- **Major** (2.3.0 → 3.0.0): breaking changes to architecture or loader
+- **Patch** (2.4.0 → 2.4.1): bug fixes, CSS tweaks, minor adjustments
+- **Minor** (2.4.1 → 2.5.0): new features, new page scripts, new panel buttons
+- **Major** (2.5.0 → 3.0.0): breaking changes to architecture or loader
+
+Also keep `@version` in `tampermonkey-loader.js` line 4 in sync (for Tampermonkey's UI) but the user does NOT need to update their copy — it's cosmetic only.
 
 Always bump the version as the **last edit** before committing, so the push includes it.
 
