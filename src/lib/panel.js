@@ -112,6 +112,7 @@
     #oxygen-panel .o-btn:hover {
       background: #fff;
       color: #000;
+      transform: none;
     }
     #oxygen-panel .o-btn:active {
       transform: scale(0.96);
