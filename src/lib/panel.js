@@ -114,11 +114,13 @@
     #oxygen-panel.collapsed .o-nav-link .o-label {
       display: none;
     }
-    #oxygen-panel.collapsed .o-nav-link {
-      height: 32px;
+    #oxygen-panel .o-nav-link {
       position: relative;
     }
-    #oxygen-panel.collapsed .o-nav-link:hover::after {
+    #oxygen-panel.collapsed .o-nav-link {
+      height: 32px;
+    }
+    #oxygen-panel .o-nav-link:hover::after {
       content: attr(data-label);
       position: absolute;
       right: calc(100% + 6px);
@@ -132,6 +134,7 @@
       font-weight: 600;
       white-space: nowrap;
       pointer-events: none;
+      z-index: 1;
     }
     #oxygen-panel:not(.collapsed) {
       overflow-y: auto;
