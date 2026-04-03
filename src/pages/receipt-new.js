@@ -167,7 +167,7 @@
       OxygenPanel.setButtonState(btn, 'active');
     });
 
-    OxygenPanel.addButton('📦', 'COD', async (btn) => {
+    OxygenPanel.addButton('💵', 'COD', async (btn) => {
       OxygenPanel.setButtonState(btn, 'running');
       await payAndCreate(1, 'Αντικαταβολή');
       OxygenPanel.setButtonState(btn, 'active');
