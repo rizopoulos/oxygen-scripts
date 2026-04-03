@@ -15,10 +15,12 @@
   injectCSS('oxygen-panel-css', `
     #oxygen-panel {
       position: fixed;
-      top: 80px;
+      top: 50%;
+      transform: translateY(-50%);
       right: 0;
       z-index: 99999;
       width: auto;
+      max-height: 80vh;
       background: #D35155;
       border-radius: 4px 0 0 4px;
       box-shadow: -4px 0 20px rgba(211,81,85,0.25);
@@ -28,6 +30,7 @@
       gap: 8px;
       transition: width 0.3s cubic-bezier(0.4,0,0.2,1), padding 0.3s ease;
       overflow: hidden;
+      resize: vertical;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
     #oxygen-panel.collapsed {
