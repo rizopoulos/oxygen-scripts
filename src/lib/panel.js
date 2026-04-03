@@ -123,7 +123,7 @@
       opacity: 0.6;
     }
     #oxygen-panel .o-btn.running {
-      background: #000;
+      background: rgba(0,0,0,0.35);
       opacity: 0.5;
       pointer-events: none;
       animation: oxygen-pulse 1.2s ease-in-out infinite;
