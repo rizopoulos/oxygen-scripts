@@ -141,6 +141,22 @@
     }
     #oxygen-panel.collapsed .o-btn {
       height: 32px;
+      position: relative;
+    }
+    #oxygen-panel.collapsed .o-btn:hover::after {
+      content: attr(data-label);
+      position: absolute;
+      right: calc(100% + 6px);
+      top: 50%;
+      transform: translateY(-50%);
+      background: #000;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      pointer-events: none;
     }
   `);
 
