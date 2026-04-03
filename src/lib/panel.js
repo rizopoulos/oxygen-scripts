@@ -231,6 +231,19 @@
   if (localStorage.getItem('oxygen-panel-collapsed') !== 'false') {
     panel.classList.add('collapsed');
   }
+
+  // Restore saved position or default to right-center
+  const savedPos = JSON.parse(localStorage.getItem('oxygen-panel-pos') || 'null');
+  if (savedPos) {
+    // Clamp to viewport so it's never off-screen
+    panel.style.top = Math.max(0, Math.min(savedPos.top, window.innerHeight - 50)) + 'px';
+    panel.style.left = Math.max(0, Math.min(savedPos.left, window.innerWidth - 50)) + 'px';
+  } else {
+    panel.style.top = '50%';
+    panel.style.left = (window.innerWidth - 60) + 'px';
+    panel.style.transform = 'translateY(-50%)';
+  }
+
   panel.innerHTML = [
     '<div class="o-panel-header">',
     '  <span class="o-panel-toggle">\u2630</span>',
@@ -247,9 +260,53 @@
   document.body.appendChild(panel);
 
   const grid = panel.querySelector('.o-btn-grid');
+  const header = panel.querySelector('.o-panel-header');
 
-  // Toggle on header click
-  panel.querySelector('.o-panel-header').addEventListener('click', () => {
+  // Drag to move panel
+  let isDragging = false;
+  let dragStartX, dragStartY, panelStartX, panelStartY;
+  let hasDragged = false;
+
+  header.addEventListener('mousedown', (e) => {
+    // Ignore clicks on nav links inside header
+    if (e.target.closest('a')) return;
+    isDragging = true;
+    hasDragged = false;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    const rect = panel.getBoundingClientRect();
+    panelStartX = rect.left;
+    panelStartY = rect.top;
+    // Remove the initial center transform once dragging starts
+    panel.style.transform = 'none';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasDragged = true;
+    const newLeft = Math.max(0, Math.min(panelStartX + dx, window.innerWidth - 50));
+    const newTop = Math.max(0, Math.min(panelStartY + dy, window.innerHeight - 50));
+    panel.style.left = newLeft + 'px';
+    panel.style.top = newTop + 'px';
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    if (hasDragged) {
+      localStorage.setItem('oxygen-panel-pos', JSON.stringify({
+        top: parseInt(panel.style.top),
+        left: parseInt(panel.style.left)
+      }));
+    }
+  });
+
+  // Toggle on header click (only if not dragged)
+  header.addEventListener('click', () => {
+    if (hasDragged) return;
     panel.classList.toggle('collapsed');
     localStorage.setItem('oxygen-panel-collapsed', panel.classList.contains('collapsed'));
   });
