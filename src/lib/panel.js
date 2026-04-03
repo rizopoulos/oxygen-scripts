@@ -245,6 +245,7 @@
   // Toggle on header click
   panel.querySelector('.o-panel-header').addEventListener('click', () => {
     panel.classList.toggle('collapsed');
+    localStorage.setItem('oxygen-panel-collapsed', panel.classList.contains('collapsed'));
   });
 
   // Public API: page scripts register their buttons here
