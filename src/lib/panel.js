@@ -222,7 +222,9 @@
   // Create panel
   const panel = document.createElement('div');
   panel.id = 'oxygen-panel';
-  panel.classList.add('collapsed');
+  if (localStorage.getItem('oxygen-panel-collapsed') !== 'false') {
+    panel.classList.add('collapsed');
+  }
   panel.innerHTML = [
     '<div class="o-panel-header">',
     '  <span class="o-panel-toggle">\u2630</span>',
