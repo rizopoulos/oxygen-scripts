@@ -41,12 +41,15 @@
       display: flex;
       align-items: center;
       width: 100%;
-      cursor: pointer;
+      cursor: grab;
       user-select: none;
       gap: 8px;
       padding-bottom: 8px;
       border-bottom: 1px solid rgba(255,255,255,0.2);
       margin-bottom: 2px;
+    }
+    #oxygen-panel .o-panel-header:active {
+      cursor: grabbing;
     }
     #oxygen-panel .o-panel-logo {
       height: 20px;
