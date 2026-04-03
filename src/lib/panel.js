@@ -36,6 +36,9 @@
     #oxygen-panel.collapsed {
       width: 48px;
       padding: 12px 6px;
+      resize: none;
+      max-height: none;
+      overflow: visible;
     }
     #oxygen-panel .o-panel-header {
       display: flex;
