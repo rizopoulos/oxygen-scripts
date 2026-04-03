@@ -174,7 +174,17 @@
     });
   }
 
+  // Scroll to products table on page load
+  function scrollToProducts() {
+    const firstUnit = document.querySelector('span.sauto[data-action="element-unitmList"]');
+    const target = firstUnit ? firstUnit.closest('table') || firstUnit : null;
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
   // Auto-run on page load
+  scrollToProducts();
   reselectAllUnits();
 
   // Expose globally
