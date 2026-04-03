@@ -38,7 +38,7 @@
       padding: 12px 6px;
       resize: none;
       max-height: none;
-      overflow: hidden;
+      overflow: visible;
     }
     #oxygen-panel .o-panel-header {
       display: flex;
