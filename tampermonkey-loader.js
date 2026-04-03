@@ -9,7 +9,7 @@
 // ==/UserScript==
 
 (function () {
-  const VERSION = '2.2.0';
+  const VERSION = '2.3.0';
   const BASE = 'https://raw.githubusercontent.com/rizopoulos/oxygen-scripts/main/src';
   const CACHE_BUST = '?v=' + VERSION + '&_=' + Date.now();
 
