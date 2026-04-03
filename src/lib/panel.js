@@ -110,8 +110,8 @@
       font-family: inherit;
     }
     #oxygen-panel .o-btn:hover {
-      background: #fff;
-      color: #000;
+      background: rgba(255,255,255,0.9);
+      color: #D35155;
       transform: none;
     }
     #oxygen-panel .o-btn:active {
