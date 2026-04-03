@@ -198,11 +198,13 @@
     #oxygen-panel.collapsed .o-btn .o-label {
       display: none;
     }
-    #oxygen-panel.collapsed .o-btn {
-      height: 32px;
+    #oxygen-panel .o-btn {
       position: relative;
     }
-    #oxygen-panel.collapsed .o-btn:hover::after {
+    #oxygen-panel.collapsed .o-btn {
+      height: 32px;
+    }
+    #oxygen-panel .o-btn:hover::after {
       content: attr(data-label);
       position: absolute;
       right: calc(100% + 6px);
@@ -216,6 +218,7 @@
       font-weight: 600;
       white-space: nowrap;
       pointer-events: none;
+      z-index: 1;
     }
   `);
 
