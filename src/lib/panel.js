@@ -15,14 +15,11 @@
   injectCSS('oxygen-panel-css', `
     #oxygen-panel {
       position: fixed;
-      top: 50%;
-      transform: translateY(-50%);
-      right: 0;
       z-index: 99999;
       width: auto;
       max-height: 80vh;
       background: #D35155;
-      border-radius: 4px 0 0 4px;
+      border-radius: 4px;
       box-shadow: -4px 0 20px rgba(211,81,85,0.25);
       padding: 12px;
       display: flex;
