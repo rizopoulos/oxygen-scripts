@@ -229,6 +229,11 @@
     '  <img class="o-panel-logo" src="https://cdn.rizopouloscoffee.gr/www/logos/rizopoulos--white.png" alt="">',
     '  <span class="o-panel-version">v' + VERSION + '</span>',
     '</div>',
+    '<div class="o-panel-nav">',
+    '  <a class="o-nav-link" data-label="Ειδοποιήσεις" href="https://app.pelatologio.gr/notices.php?m=303" target="_blank">',
+    '    <span class="o-icon">📋</span><span class="o-label">Ειδοποιήσεις</span>',
+    '  </a>',
+    '</div>',
     '<div class="o-btn-grid"></div>',
   ].join('');
   document.body.appendChild(panel);
