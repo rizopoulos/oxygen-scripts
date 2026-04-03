@@ -75,6 +75,9 @@
       font-size: 14px;
       flex-shrink: 0;
     }
+    #oxygen-panel:not(.collapsed) {
+      overflow-y: auto;
+    }
     #oxygen-panel .o-btn-grid {
       display: grid;
       grid-template-columns: 1fr;
