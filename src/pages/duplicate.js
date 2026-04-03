@@ -446,7 +446,7 @@
 
   // Register on panel
   if (window.OxygenPanel) {
-    OxygenPanel.addButton('📋', 'Copy', () => {
+    OxygenPanel.addButton('🔄', 'Copy', () => {
       showDialog();
     });
   }
