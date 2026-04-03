@@ -97,7 +97,7 @@
       gap: 5px;
       height: 36px;
       border: none;
-      background: #000;
+      background: rgba(0,0,0,0.35);
       color: #fff;
       border-radius: 4px;
       cursor: pointer;
