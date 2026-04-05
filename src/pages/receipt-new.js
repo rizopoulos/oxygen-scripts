@@ -175,32 +175,10 @@
 
     OxygenPanel.addButton('📅', 'Next Day', async (btn) => {
       OxygenPanel.setButtonState(btn, 'running');
-      const input = document.querySelector('#shipping_date');
-      if (!input) { error('#shipping_date not found'); OxygenPanel.setButtonState(btn, null); return; }
-
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
-
-      const $input = window.jQuery ? jQuery(input) : null;
-
-      // Use datepicker API as the primary method — it updates internal state + the input value
-      if ($input && $input.datepicker('instance')) {
-        $input.datepicker('setDate', tomorrow);
-        log('Shipping date set via datepicker to ' + $input.val());
-      } else {
-        // Fallback: set value manually with DD/MM/YYYY format
-        const dd = String(tomorrow.getDate()).padStart(2, '0');
-        const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
-        const formatted = dd + '/' + mm + '/' + tomorrow.getFullYear();
-        input.value = formatted;
-        log('Shipping date set manually to ' + formatted);
-      }
-
-      // Fire all change/input events so Oxygen picks up the new value
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-      if ($input) $input.trigger('change');
-
+      jQuery('#shipping_date').datepicker('setDate', tomorrow).trigger('change');
+      log('Shipping date set to tomorrow');
       OxygenPanel.setButtonState(btn, 'active');
     });
   }
