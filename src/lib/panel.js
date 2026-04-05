@@ -305,9 +305,22 @@
   });
 
   // Toggle on header click (only if not dragged)
+  // Panel always expands to the LEFT: right edge stays pinned.
   header.addEventListener('click', () => {
     if (hasDragged) return;
+    const rightEdge = window.innerWidth - panel.getBoundingClientRect().right;
     panel.classList.toggle('collapsed');
+    panel.style.transform = 'none';
+    // After class change, recalculate left so right edge stays put
+    requestAnimationFrame(() => {
+      const newWidth = panel.getBoundingClientRect().width;
+      const newLeft = Math.max(0, window.innerWidth - rightEdge - newWidth);
+      panel.style.left = newLeft + 'px';
+      localStorage.setItem('oxygen-panel-pos', JSON.stringify({
+        top: parseInt(panel.style.top),
+        left: newLeft
+      }));
+    });
     localStorage.setItem('oxygen-panel-collapsed', panel.classList.contains('collapsed'));
   });
 
