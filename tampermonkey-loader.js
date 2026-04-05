@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Oxygen ERP Scripts
 // @namespace    https://github.com/rizopoulos/oxygen-scripts
-// @version      2.4.0
+// @version      2.5.0
 // @description  Automates repetitive workflows in Oxygen ERP (Pelatologio.gr)
 // @match        https://app.pelatologio.gr/*
 // @grant        none
