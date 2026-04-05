@@ -172,6 +172,33 @@
       await payAndCreate(1, 'Αντικαταβολή');
       OxygenPanel.setButtonState(btn, 'active');
     });
+
+    OxygenPanel.addButton('📅', 'Next Day', async (btn) => {
+      OxygenPanel.setButtonState(btn, 'running');
+      const input = document.querySelector('#shipping_date');
+      if (!input) { error('#shipping_date not found'); OxygenPanel.setButtonState(btn, null); return; }
+
+      // Calculate tomorrow as DD/MM/YYYY (Oxygen's date format)
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const dd = String(tomorrow.getDate()).padStart(2, '0');
+      const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+      const yyyy = tomorrow.getFullYear();
+      const formatted = dd + '/' + mm + '/' + yyyy;
+
+      // Set value and trigger datepicker/change events
+      input.value = formatted;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      if (window.jQuery) {
+        jQuery(input).val(formatted).trigger('change');
+        // If jQuery UI datepicker is attached, update it
+        if (jQuery(input).datepicker) {
+          try { jQuery(input).datepicker('setDate', formatted); } catch (_) {}
+        }
+      }
+      log('Shipping date set to ' + formatted);
+      OxygenPanel.setButtonState(btn, 'active');
+    });
   }
 
   // Scroll to products table on page load
