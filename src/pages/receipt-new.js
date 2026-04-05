@@ -178,25 +178,29 @@
       const input = document.querySelector('#shipping_date');
       if (!input) { error('#shipping_date not found'); OxygenPanel.setButtonState(btn, null); return; }
 
-      // Calculate tomorrow as DD/MM/YYYY (Oxygen's date format)
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
-      const dd = String(tomorrow.getDate()).padStart(2, '0');
-      const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
-      const yyyy = tomorrow.getFullYear();
-      const formatted = dd + '/' + mm + '/' + yyyy;
 
-      // Set value and trigger datepicker/change events
-      input.value = formatted;
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-      if (window.jQuery) {
-        jQuery(input).val(formatted).trigger('change');
-        // If jQuery UI datepicker is attached, update it
-        if (jQuery(input).datepicker) {
-          try { jQuery(input).datepicker('setDate', formatted); } catch (_) {}
-        }
+      const $input = window.jQuery ? jQuery(input) : null;
+
+      // Use datepicker API as the primary method — it updates internal state + the input value
+      if ($input && $input.datepicker('instance')) {
+        $input.datepicker('setDate', tomorrow);
+        log('Shipping date set via datepicker to ' + $input.val());
+      } else {
+        // Fallback: set value manually with DD/MM/YYYY format
+        const dd = String(tomorrow.getDate()).padStart(2, '0');
+        const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+        const formatted = dd + '/' + mm + '/' + tomorrow.getFullYear();
+        input.value = formatted;
+        log('Shipping date set manually to ' + formatted);
       }
-      log('Shipping date set to ' + formatted);
+
+      // Fire all change/input events so Oxygen picks up the new value
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      if ($input) $input.trigger('change');
+
       OxygenPanel.setButtonState(btn, 'active');
     });
   }
