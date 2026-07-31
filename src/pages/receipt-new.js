@@ -158,45 +158,51 @@
   // =========================================================================
   // Copy print (Εκτύπωση αντιγράφου)
   // =========================================================================
-  // After the document is created Oxygen prints once on its own. When the
-  // "Αντίγραφο" checkbox is on, we wait for that first print to finish, then
-  // drive a second print through the orange Εκτύπωση/PDF button.
+  // Oxygen prints once on its own right after the document is created. When the
+  // "Αντίγραφο" checkbox is on we wait for that first print to finish, then drive
+  // a second one through the orange Εκτύπωση/PDF button.
   //
   // Modals are matched by TEXT, not by selector — Oxygen's modal markup is not
-  // stable and we already do this for the warehouse warning above.
+  // stable, and watchForWarningModal() above already works this way.
+  //
+  // The patterns tolerate both accented and unaccented spellings. Greek capitals
+  // carry no accent, so /i plus [ήη] style classes cover every casing Oxygen uses.
   // =========================================================================
 
   const PRINTER_NAME = 'Brother MFC-L2860DW';
-  const TXT_PRINT_MODAL = 'εκτυπωση παραστατικου';
-  const TXT_WAITING     = 'αναμονη εκτυπωσης';
-  const TXT_CONNECTING  = 'συνδεση με εκτυπωτη';
-  const PRINT_TEXTS = [TXT_PRINT_MODAL, TXT_WAITING, TXT_CONNECTING];
+  const RE_PRINT_MODAL = /εκτ[υύ]πωση\s+παραστατικο[υύ]/i;
+  const RE_WAITING     = /αναμον[ηή]\s+εκτ[υύ]πωσης/i;
+  const RE_CONNECTING  = /σ[υύ]νδεση\s+με\s+εκτυπωτ[ηή]/i;
+  const PRINT_PATTERNS = [RE_PRINT_MODAL, RE_WAITING, RE_CONNECTING];
 
-  // Lowercase + strip Greek accents so matching survives ΑΝΑΜΟΝΉ / Αναμονή / αναμονη
-  function norm(s) {
-    return (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-  }
+  // Deepest VISIBLE <div> whose text matches `re`, or null.
+  // Early-out on document.body first: scanning every div's subtree text is costly,
+  // and on most polls the phrase is not on the page at all.
+  function findVisibleByText(re) {
+    if (!re.test(document.body.textContent)) return null;
 
-  // Deepest visible <div> whose text contains `needle` (already normalised)
-  function findVisibleByText(needle) {
     const divs = document.querySelectorAll('div');
     let best = null;
     for (const d of divs) {
-      if (norm(d.textContent).indexOf(needle) === -1) continue;
+      if (!re.test(d.textContent)) continue;
       const rect = d.getBoundingClientRect();
       if (rect.width === 0 || rect.height === 0) continue;
-      // querySelectorAll is in document order, so descendants overwrite ancestors
+      // querySelectorAll returns document order, so descendants overwrite ancestors
       if (!best || best.contains(d)) best = d;
     }
     return best;
   }
 
   function anyPrintModalVisible() {
-    return PRINT_TEXTS.some(t => findVisibleByText(t) !== null);
+    return PRINT_PATTERNS.some(re => findVisibleByText(re) !== null);
   }
 
-  // Poll `check` until it returns truthy. Resolves to the value, or null on timeout.
-  async function waitUntil(check, timeout, interval = 200) {
+  function spinnerVisible() {
+    return findVisibleByText(RE_WAITING) !== null || findVisibleByText(RE_CONNECTING) !== null;
+  }
+
+  // Poll `check` until truthy. Resolves to its value, or null on timeout.
+  async function waitUntil(check, timeout, interval = 400) {
     const start = Date.now();
     while (Date.now() - start < timeout) {
       const v = check();
@@ -219,12 +225,13 @@
   }
 
   // #output is a select2. Several options can share value="direct_print" (one per
-  // printer), so select the OPTION object rather than assigning select.value.
+  // configured printer), so flip the OPTION rather than assigning select.value —
+  // that would grab whichever direct_print option comes first.
   function selectPrinter(sel) {
     const opts = Array.from(sel.options);
     const target =
       opts.find(o => (o.getAttribute('data-printer') || '') === PRINTER_NAME) ||
-      opts.find(o => norm(o.textContent).indexOf(norm(PRINTER_NAME)) !== -1) ||
+      opts.find(o => o.textContent.indexOf(PRINTER_NAME) !== -1) ||
       opts.find(o => o.value === 'direct_print');
     if (!target) return false;
 
@@ -232,7 +239,7 @@
     target.selected = true;
     sel.dispatchEvent(new Event('change', { bubbles: true }));
     if (window.jQuery) jQuery(sel).trigger('change');
-    log(`Printer selected: ${target.textContent.trim()}`);
+    log(`Copy print: printer set to "${target.textContent.trim()}"`);
     return true;
   }
 
@@ -248,7 +255,7 @@
     };
 
     try {
-      // 1. First print starts
+      // 1. First print opens
       log('Copy print: waiting for the first print modal...');
       if (!await waitUntil(anyPrintModalVisible, 20000)) {
         return fail('δεν άνοιξε το modal εκτύπωσης');
@@ -271,7 +278,7 @@
       const sel = await waitUntil(() => {
         const s = document.querySelector('select#output');
         return s && s.options.length ? s : null;
-      }, 15000);
+      }, 15000, 200);
       if (!sel) return fail('δεν άνοιξε το modal επιλογής εκτυπωτή');
       await sleep(400);
 
@@ -286,19 +293,13 @@
       log('Copy print: clicked Εκτέλεση');
 
       // 7. Αναμονή εκτύπωσης → Σύνδεση με εκτυπωτή → both close
-      const spinnerSeen = await waitUntil(
-        () => findVisibleByText(TXT_WAITING) || findVisibleByText(TXT_CONNECTING),
-        10000
-      );
-      if (spinnerSeen) {
-        const done = await waitUntil(
-          () => !findVisibleByText(TXT_WAITING) && !findVisibleByText(TXT_CONNECTING),
-          90000
-        );
-        if (!done) return fail('ο εκτυπωτής δεν απάντησε');
+      if (await waitUntil(spinnerVisible, 10000, 200)) {
+        if (!await waitUntil(() => !spinnerVisible(), 90000)) {
+          return fail('ο εκτυπωτής δεν απάντησε');
+        }
         if (window.OxygenPanel) OxygenPanel.toast('✓ Εκτυπώθηκε το αντίγραφο');
       } else {
-        // Printer answered faster than we could poll — report honestly.
+        // Spinners came and went faster than we could poll — say so, don't claim proof.
         warn('Copy print: never saw the printer spinners');
         if (window.OxygenPanel) OxygenPanel.toast('Το αντίγραφο στάλθηκε στον εκτυπωτή');
       }
@@ -313,23 +314,25 @@
 
   // Register buttons on control panel
   if (window.OxygenPanel) {
+    const copyChk = OxygenPanel.addCheckbox('🖨', 'Αντίγραφο', 'oxygen-copy-print');
+
+    // Create the document, then optionally print a second copy
+    const createThenCopy = async (btn, methodValue, methodLabel) => {
+      OxygenPanel.setButtonState(btn, 'running');
+      const created = await payAndCreate(methodValue, methodLabel);
+      if (created && copyChk.isChecked()) await printCopy();
+      OxygenPanel.setButtonState(btn, 'active');
+    };
+
     OxygenPanel.addButton('⚖', 'Units', async (btn) => {
       OxygenPanel.setButtonState(btn, 'running');
       await reselectAllUnits();
       OxygenPanel.setButtonState(btn, 'active');
     });
 
-    OxygenPanel.addButton('💳', 'Card', async (btn) => {
-      OxygenPanel.setButtonState(btn, 'running');
-      await payAndCreate(8, 'Κάρτα');
-      OxygenPanel.setButtonState(btn, 'active');
-    });
+    OxygenPanel.addButton('💳', 'Card', (btn) => createThenCopy(btn, 8, 'Κάρτα'));
 
-    OxygenPanel.addButton('💵', 'COD', async (btn) => {
-      OxygenPanel.setButtonState(btn, 'running');
-      await payAndCreate(1, 'Αντικαταβολή');
-      OxygenPanel.setButtonState(btn, 'active');
-    });
+    OxygenPanel.addButton('💵', 'COD', (btn) => createThenCopy(btn, 1, 'Αντικαταβολή'));
 
     OxygenPanel.addButton('📅', 'Next Day', async (btn) => {
       OxygenPanel.setButtonState(btn, 'running');
@@ -354,7 +357,8 @@
   scrollToProducts();
   reselectAllUnits();
 
-  // Expose globally
+  // Expose globally — handy for testing the copy flow from the console
   window.oxygenReselectUnits = reselectAllUnits;
+  window.oxygenPrintCopy = printCopy;
 
 })();
