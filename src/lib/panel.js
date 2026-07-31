@@ -447,6 +447,58 @@
     setButtonState(btn, state) {
       btn.classList.remove('active', 'running');
       if (state) btn.classList.add(state);
+    },
+
+    // Persistent toggle row above the button grid.
+    // Returns { isChecked(), set(v), el } — closures only, never `this`.
+    addCheckbox(icon, label, storageKey) {
+      const el = document.createElement('div');
+      el.className = 'o-check';
+      el.setAttribute('data-label', label);
+      el.innerHTML = '<span class="o-box"></span><span class="o-icon">' + icon + '</span><span class="o-label">' + label + '</span>';
+      if (localStorage.getItem(storageKey) === 'true') el.classList.add('checked');
+      el.addEventListener('click', () => {
+        el.classList.toggle('checked');
+        localStorage.setItem(storageKey, el.classList.contains('checked'));
+        log(label + ': ' + (el.classList.contains('checked') ? 'ON' : 'OFF'));
+      });
+      checks.appendChild(el);
+      return {
+        el: el,
+        isChecked() { return el.classList.contains('checked'); },
+        set(v) {
+          el.classList.toggle('checked', !!v);
+          localStorage.setItem(storageKey, !!v);
+        }
+      };
+    },
+
+    // Non-blocking message pinned beside the panel. type: 'ok' (default) | 'fail'
+    toast(message, type) {
+      let el = document.getElementById('oxygen-toast');
+      if (!el) {
+        el = document.createElement('div');
+        el.id = 'oxygen-toast';
+        document.body.appendChild(el);
+      }
+      el.textContent = message;
+      el.classList.toggle('fail', type === 'fail');
+
+      // Panel is draggable — recompute placement every time.
+      const r = panel.getBoundingClientRect();
+      el.style.top = Math.max(8, Math.min(r.top, window.innerHeight - 80)) + 'px';
+      if (r.left >= 280) {
+        el.style.left = 'auto';
+        el.style.right = (window.innerWidth - r.left + 8) + 'px';
+      } else {
+        el.style.right = 'auto';
+        el.style.left = (r.right + 8) + 'px';
+      }
+
+      clearTimeout(toastTimer);
+      requestAnimationFrame(() => el.classList.add('show'));
+      toastTimer = setTimeout(() => el.classList.remove('show'), type === 'fail' ? 8000 : 4000);
+      log('Toast: ' + message);
     }
   };
 
