@@ -428,6 +428,8 @@
     localStorage.setItem('oxygen-panel-collapsed', panel.classList.contains('collapsed'));
   });
 
+  let toastTimer = null;
+
   // Public API: page scripts register their buttons here
   window.OxygenPanel = {
     addButton(icon, label, onClick) {
