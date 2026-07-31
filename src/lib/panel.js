@@ -223,6 +223,108 @@
       pointer-events: none;
       z-index: 1;
     }
+
+    /* --- Checkbox rows (above the button grid) --- */
+    #oxygen-panel .o-panel-checks {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+      margin-bottom: 2px;
+    }
+    #oxygen-panel .o-panel-checks:empty { display: none; }
+    #oxygen-panel .o-check {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      height: 32px;
+      padding: 0 8px;
+      background: rgba(0,0,0,0.35);
+      color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      user-select: none;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+    #oxygen-panel .o-check:hover {
+      background: rgba(255,255,255,0.9);
+      color: #D35155;
+    }
+    #oxygen-panel .o-check.checked {
+      background: #008582;
+      color: #fff;
+    }
+    #oxygen-panel .o-check.checked:hover {
+      background: #008582;
+      color: #fff;
+      opacity: 0.85;
+    }
+    #oxygen-panel .o-check .o-box {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      border: 2px solid currentColor;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      line-height: 1;
+    }
+    #oxygen-panel .o-check.checked .o-box::after { content: '\\2713'; }
+    #oxygen-panel.collapsed .o-check {
+      justify-content: center;
+      padding: 0 4px;
+    }
+    #oxygen-panel.collapsed .o-check .o-label,
+    #oxygen-panel.collapsed .o-check .o-icon { display: none; }
+    #oxygen-panel .o-check:hover::after {
+      content: attr(data-label);
+      position: absolute;
+      right: calc(100% + 6px);
+      top: 50%;
+      transform: translateY(-50%);
+      background: #000;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* --- Toast (floats next to the panel) --- */
+    #oxygen-toast {
+      position: fixed;
+      z-index: 100000;
+      max-width: 260px;
+      padding: 10px 14px;
+      background: #008582;
+      color: #fff;
+      border-radius: 4px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.4;
+      opacity: 0;
+      transform: translateX(8px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: none;
+    }
+    #oxygen-toast.show {
+      opacity: 1;
+      transform: none;
+    }
+    #oxygen-toast.fail { background: #D35155; }
   `);
 
   // Create panel
