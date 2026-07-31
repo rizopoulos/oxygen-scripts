@@ -357,11 +357,13 @@
     '    <span class="o-icon">📋</span><span class="o-label">Ειδοποιήσεις</span>',
     '  </a>',
     '</div>',
+    '<div class="o-panel-checks"></div>',
     '<div class="o-btn-grid"></div>',
   ].join('');
   document.body.appendChild(panel);
 
   const grid = panel.querySelector('.o-btn-grid');
+  const checks = panel.querySelector('.o-panel-checks');
   const header = panel.querySelector('.o-panel-header');
 
   // Drag to move panel
