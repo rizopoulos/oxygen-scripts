@@ -104,20 +104,21 @@
   }
 
   // Set payment method, click "paid yes", then create invoice
+  // Returns true only if the whole chain fired — the copy-print flow depends on it.
   async function payAndCreate(methodValue, methodLabel) {
     log(`${methodLabel}: setting payment method to ${methodValue}...`);
 
-    if (!setSelect2Value('#invoice_payment_method', methodValue)) return;
+    if (!setSelect2Value('#invoice_payment_method', methodValue)) return false;
     await sleep(300);
 
     const paidBtn = document.querySelector('#btnCheckPayed_yes');
-    if (!paidBtn) { error('#btnCheckPayed_yes not found'); return; }
+    if (!paidBtn) { error('#btnCheckPayed_yes not found'); return false; }
     paidBtn.click();
     log('Clicked "Paid Yes"');
     await sleep(300);
 
     const createBtn = document.querySelector('#btnCreateInvoice');
-    if (!createBtn) { error('#btnCreateInvoice not found'); return; }
+    if (!createBtn) { error('#btnCreateInvoice not found'); return false; }
     createBtn.click();
     log('Clicked "Create Invoice"');
 
@@ -125,6 +126,7 @@
     // It may appear 200ms-2s later with "ΠΡΟΣΟΧΗ" + "δεν είναι διαθέσιμα"
     // If all 3 conditions met: modal visible, contains both texts, has the button → click it
     watchForWarningModal();
+    return true;
   }
 
   function watchForWarningModal() {
