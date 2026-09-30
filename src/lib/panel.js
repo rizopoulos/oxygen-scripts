@@ -486,20 +486,92 @@
     '  <span class="o-panel-toggle">\u2630</span>',
     '  <img class="o-panel-logo" src="https://cdn.rizopouloscoffee.gr/www/logos/rizopoulos--white.png" alt="">',
     '  <span class="o-panel-version">v' + VERSION + '</span>',
+    '  <span class="o-panel-orient" title="Οριζόντια / κάθετη μπάρα">⇄</span>',
     '</div>',
-    '<div class="o-panel-nav">',
-    '  <a class="o-nav-link" data-label="Ειδοποιήσεις" href="https://app.pelatologio.gr/notices.php?m=303" target="_blank">',
-    '    <span class="o-icon">📋</span><span class="o-label">Ειδοποιήσεις</span>',
-    '  </a>',
+    '<div class="o-menu-wrap o-menu-wrap--nav" hidden>',
+    '  <div class="o-menu-trigger" data-label="Πλοήγηση"><span class="o-icon">📋</span><span class="o-label">Πλοήγηση</span><span class="o-caret"></span></div>',
+    '  <div class="o-panel-nav o-menu-pop"></div>',
     '</div>',
-    '<div class="o-panel-checks"></div>',
+    '<div class="o-menu-wrap o-menu-wrap--checks" hidden>',
+    '  <div class="o-menu-trigger" data-label="Ρυθμίσεις"><span class="o-icon">⚙</span><span class="o-label">Ρυθμίσεις</span><span class="o-caret"></span></div>',
+    '  <div class="o-panel-checks o-menu-pop"></div>',
+    '</div>',
     '<div class="o-btn-grid"></div>',
   ].join('');
+  if (localStorage.getItem('oxygen-panel-orient') === 'horizontal') {
+    panel.classList.add('horizontal');
+  }
   document.body.appendChild(panel);
 
   const grid = panel.querySelector('.o-btn-grid');
+  const nav = panel.querySelector('.o-panel-nav');
   const checks = panel.querySelector('.o-panel-checks');
   const header = panel.querySelector('.o-panel-header');
+  const orient = panel.querySelector('.o-panel-orient');
+  const menuWraps = panel.querySelectorAll('.o-menu-wrap');
+
+  // Menus open up when the bar sits in the lower half of the screen, down otherwise.
+  // Recomputed on every placement change (drag, toggle, resize, menu open).
+  const updateDirection = () => {
+    const r = panel.getBoundingClientRect();
+    const up = (r.top + r.height / 2) > window.innerHeight / 2;
+    panel.classList.toggle('o-up', up);
+    panel.classList.toggle('o-down', !up);
+  };
+
+  const closeMenus = () => {
+    menuWraps.forEach((w) => w.classList.remove('open'));
+  };
+
+  const savePos = () => {
+    localStorage.setItem('oxygen-panel-pos', JSON.stringify({
+      top: parseInt(panel.style.top),
+      left: parseInt(panel.style.left)
+    }));
+  };
+
+  // Keep the whole panel on screen after its size changes
+  const clampToViewport = () => {
+    const r = panel.getBoundingClientRect();
+    panel.style.left = Math.max(0, Math.min(r.left, window.innerWidth - r.width)) + 'px';
+    panel.style.top = Math.max(0, Math.min(r.top, window.innerHeight - r.height)) + 'px';
+  };
+
+  menuWraps.forEach((wrap) => {
+    wrap.querySelector('.o-menu-trigger').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const wasOpen = wrap.classList.contains('open');
+      closeMenus();
+      if (!wasOpen) {
+        updateDirection();
+        wrap.classList.add('open');
+      }
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#oxygen-panel .o-menu-wrap')) closeMenus();
+  });
+  nav.addEventListener('click', (e) => {
+    if (e.target.closest('a')) closeMenus();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMenus();
+  });
+  window.addEventListener('resize', updateDirection);
+
+  orient.addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeMenus();
+    panel.classList.toggle('horizontal');
+    panel.style.transform = 'none';
+    localStorage.setItem('oxygen-panel-orient', panel.classList.contains('horizontal') ? 'horizontal' : 'vertical');
+    requestAnimationFrame(() => {
+      clampToViewport();
+      savePos();
+      updateDirection();
+    });
+  });
 
   // Drag to move panel
   let isDragging = false;
