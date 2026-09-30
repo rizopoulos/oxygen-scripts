@@ -1,7 +1,9 @@
 // ===========================================================================
 // Oxygen Scripts - Control Panel
 // ===========================================================================
-// Floating panel on the right side with action buttons per page.
+// Floating panel with action buttons per page. Vertical (default) or horizontal
+// bar (⇄ in header); horizontal groups nav links and checkboxes into menus that
+// open up or down depending on which half of the screen the bar sits in.
 // Click the header to toggle open/collapsed.
 // Colors: #D35155 (berry-red), #008582 (leafy-green), #815f88 (deep-purple), #000, #fff
 // ===========================================================================
@@ -533,6 +535,7 @@
   // Keep the whole panel on screen after its size changes
   const clampToViewport = () => {
     const r = panel.getBoundingClientRect();
+    panel.style.transform = 'none';
     panel.style.left = Math.max(0, Math.min(r.left, window.innerWidth - r.width)) + 'px';
     panel.style.top = Math.max(0, Math.min(r.top, window.innerHeight - r.height)) + 'px';
   };
@@ -579,8 +582,9 @@
   let hasDragged = false;
 
   header.addEventListener('mousedown', (e) => {
-    // Ignore clicks on nav links inside header
-    if (e.target.closest('a')) return;
+    // Ignore clicks on nav links and the orientation toggle inside header
+    if (e.target.closest('a, .o-panel-orient')) return;
+    closeMenus();
     isDragging = true;
     hasDragged = false;
     dragStartX = e.clientX;
@@ -598,8 +602,9 @@
     const dx = e.clientX - dragStartX;
     const dy = e.clientY - dragStartY;
     if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasDragged = true;
-    const newLeft = Math.max(0, Math.min(panelStartX + dx, window.innerWidth - 50));
-    const newTop = Math.max(0, Math.min(panelStartY + dy, window.innerHeight - 50));
+    const r = panel.getBoundingClientRect();
+    const newLeft = Math.max(0, Math.min(panelStartX + dx, window.innerWidth - Math.min(r.width, 50)));
+    const newTop = Math.max(0, Math.min(panelStartY + dy, window.innerHeight - Math.min(r.height, 50)));
     panel.style.left = newLeft + 'px';
     panel.style.top = newTop + 'px';
   });
@@ -608,10 +613,9 @@
     if (!isDragging) return;
     isDragging = false;
     if (hasDragged) {
-      localStorage.setItem('oxygen-panel-pos', JSON.stringify({
-        top: parseInt(panel.style.top),
-        left: parseInt(panel.style.left)
-      }));
+      if (panel.classList.contains('horizontal')) clampToViewport();
+      savePos();
+      updateDirection();
     }
   });
 
@@ -672,6 +676,7 @@
         log(label + ': ' + (el.classList.contains('checked') ? 'ON' : 'OFF'));
       });
       checks.appendChild(el);
+      checks.parentElement.hidden = false;
       return {
         el: el,
         isChecked() { return el.classList.contains('checked'); },
@@ -680,6 +685,19 @@
           localStorage.setItem(storageKey, !!v);
         }
       };
+    },
+
+    // Link in the navigation group (inline when vertical, drop-up/down menu when horizontal)
+    addNavLink(icon, label, href) {
+      const a = document.createElement('a');
+      a.className = 'o-nav-link';
+      a.setAttribute('data-label', label);
+      a.href = href;
+      a.target = '_blank';
+      a.innerHTML = '<span class="o-icon">' + icon + '</span><span class="o-label">' + label + '</span>';
+      nav.appendChild(a);
+      nav.parentElement.hidden = false;
+      return a;
     },
 
     // Non-blocking message pinned beside the panel. type: 'ok' (default) | 'fail'
@@ -695,11 +713,26 @@
 
       // Panel is draggable — recompute placement every time.
       const r = panel.getBoundingClientRect();
-      el.style.top = Math.max(8, Math.min(r.top, window.innerHeight - 80)) + 'px';
-      if (r.left >= 280) {
+      if (panel.classList.contains('horizontal')) {
+        // Above the bar when it sits low, below it when it sits high
+        updateDirection();
+        el.style.right = 'auto';
+        el.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 268)) + 'px';
+        if (panel.classList.contains('o-up')) {
+          el.style.top = 'auto';
+          el.style.bottom = (window.innerHeight - r.top + 8) + 'px';
+        } else {
+          el.style.bottom = 'auto';
+          el.style.top = (r.bottom + 8) + 'px';
+        }
+      } else if (r.left >= 280) {
+        el.style.bottom = 'auto';
+        el.style.top = Math.max(8, Math.min(r.top, window.innerHeight - 80)) + 'px';
         el.style.left = 'auto';
         el.style.right = (window.innerWidth - r.left + 8) + 'px';
       } else {
+        el.style.bottom = 'auto';
+        el.style.top = Math.max(8, Math.min(r.top, window.innerHeight - 80)) + 'px';
         el.style.right = 'auto';
         el.style.left = (r.right + 8) + 'px';
       }
@@ -710,6 +743,10 @@
       log('Toast: ' + message);
     }
   };
+
+  OxygenPanel.addNavLink('📋', 'Ειδοποιήσεις', 'https://app.pelatologio.gr/notices.php?m=303');
+  if (panel.classList.contains('horizontal')) clampToViewport();
+  updateDirection();
 
   log('Control panel v' + VERSION + ' loaded');
 
