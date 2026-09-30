@@ -301,6 +301,141 @@
       z-index: 1;
     }
 
+    /* --- Orientation toggle (header) --- */
+    #oxygen-panel .o-panel-orient {
+      color: #fff;
+      font-size: 13px;
+      line-height: 1;
+      padding: 2px 4px;
+      border-radius: 4px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    #oxygen-panel .o-panel-orient:hover { background: rgba(255,255,255,0.2); }
+    #oxygen-panel.collapsed:not(.horizontal) .o-panel-header { gap: 2px; }
+    #oxygen-panel.collapsed:not(.horizontal) .o-panel-orient { padding: 2px; }
+
+    /* --- Menu wrappers: transparent in vertical, drop-up/down menus in horizontal --- */
+    #oxygen-panel .o-menu-wrap { display: contents; }
+    #oxygen-panel .o-menu-wrap[hidden] { display: none; }
+    #oxygen-panel .o-menu-trigger { display: none; }
+
+    /* --- Horizontal bar --- */
+    #oxygen-panel.horizontal,
+    #oxygen-panel.horizontal:not(.collapsed),
+    #oxygen-panel.horizontal.collapsed {
+      flex-direction: row;
+      align-items: center;
+      width: auto;
+      max-height: none;
+      padding: 6px;
+      gap: 6px;
+      overflow: visible;
+      resize: none;
+    }
+    #oxygen-panel.horizontal .o-panel-header {
+      width: auto;
+      padding: 0 8px 0 2px;
+      margin: 0;
+      border-bottom: none;
+      border-right: 1px solid rgba(255,255,255,0.2);
+      align-self: stretch;
+    }
+    #oxygen-panel.horizontal .o-btn-grid {
+      order: 1;
+      display: flex;
+      width: auto;
+    }
+    #oxygen-panel.horizontal .o-btn,
+    #oxygen-panel.horizontal .o-menu-trigger {
+      height: 32px;
+      overflow: visible;
+    }
+    #oxygen-panel.horizontal.collapsed .o-btn { width: 32px; padding: 0; }
+    #oxygen-panel.horizontal .o-menu-wrap {
+      display: block;
+      position: relative;
+      order: 2;
+    }
+    #oxygen-panel.horizontal .o-menu-wrap[hidden] { display: none; }
+    #oxygen-panel.horizontal .o-menu-wrap--checks { order: 3; }
+    #oxygen-panel.horizontal .o-menu-trigger {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 0 8px;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      user-select: none;
+    }
+    #oxygen-panel.horizontal .o-menu-trigger:hover,
+    #oxygen-panel.horizontal .o-menu-wrap.open .o-menu-trigger {
+      background: #fff;
+      color: #D35155;
+    }
+    #oxygen-panel.horizontal.collapsed .o-menu-trigger .o-label { display: none; }
+    #oxygen-panel .o-caret { font-size: 9px; }
+    #oxygen-panel.o-up .o-caret::after { content: '\\25B4'; }
+    #oxygen-panel.o-down .o-caret::after { content: '\\25BE'; }
+
+    #oxygen-panel.horizontal .o-menu-pop {
+      display: none;
+      position: absolute;
+      left: 0;
+      min-width: 170px;
+      width: max-content;
+      flex-direction: column;
+      gap: 6px;
+      margin: 0;
+      padding: 6px;
+      background: #D35155;
+      border-radius: 4px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    }
+    #oxygen-panel.horizontal .o-menu-wrap.open .o-menu-pop { display: flex; }
+    #oxygen-panel.horizontal.o-up .o-menu-pop { bottom: calc(100% + 12px); }
+    #oxygen-panel.horizontal.o-down .o-menu-pop { top: calc(100% + 12px); }
+    /* Labels always visible inside an open menu, so no tooltips there */
+    #oxygen-panel.horizontal .o-menu-pop .o-nav-link,
+    #oxygen-panel.horizontal .o-menu-pop .o-check {
+      justify-content: flex-start;
+      height: 32px;
+      padding: 0 8px;
+    }
+    #oxygen-panel.horizontal .o-menu-pop .o-label,
+    #oxygen-panel.horizontal .o-menu-pop .o-icon { display: inline; }
+    #oxygen-panel.horizontal .o-menu-pop .o-nav-link:hover::after,
+    #oxygen-panel.horizontal .o-menu-pop .o-check:hover::after { display: none; }
+
+    /* Tooltips above/below the bar instead of to the left */
+    #oxygen-panel.horizontal .o-btn:hover::after,
+    #oxygen-panel.horizontal.collapsed .o-menu-wrap:not(.open) .o-menu-trigger:hover::after {
+      content: attr(data-label);
+      position: absolute;
+      right: auto;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #000;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 1;
+    }
+    #oxygen-panel.horizontal.o-up .o-btn:hover::after,
+    #oxygen-panel.horizontal.o-up .o-menu-trigger:hover::after { top: auto; bottom: calc(100% + 12px); }
+    #oxygen-panel.horizontal.o-down .o-btn:hover::after,
+    #oxygen-panel.horizontal.o-down .o-menu-trigger:hover::after { top: calc(100% + 12px); bottom: auto; }
+
     /* --- Toast (floats next to the panel) --- */
     #oxygen-toast {
       position: fixed;
