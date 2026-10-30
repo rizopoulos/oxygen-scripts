@@ -462,6 +462,7 @@
       transform: none;
     }
     #oxygen-toast.fail { background: #D35155; }
+    #oxygen-toast.sticky { pointer-events: auto; cursor: pointer; }
   `);
 
   // Create panel
@@ -701,15 +702,18 @@
     },
 
     // Non-blocking message pinned beside the panel. type: 'ok' (default) | 'fail'
-    toast(message, type) {
+    // sticky: stays until clicked (for messages the user must not miss).
+    toast(message, type, sticky) {
       let el = document.getElementById('oxygen-toast');
       if (!el) {
         el = document.createElement('div');
         el.id = 'oxygen-toast';
+        el.addEventListener('click', () => el.classList.remove('show'));
         document.body.appendChild(el);
       }
       el.textContent = message;
       el.classList.toggle('fail', type === 'fail');
+      el.classList.toggle('sticky', !!sticky);
 
       // Panel is draggable — recompute placement every time.
       const r = panel.getBoundingClientRect();
@@ -739,7 +743,7 @@
 
       clearTimeout(toastTimer);
       requestAnimationFrame(() => el.classList.add('show'));
-      toastTimer = setTimeout(() => el.classList.remove('show'), type === 'fail' ? 8000 : 4000);
+      if (!sticky) toastTimer = setTimeout(() => el.classList.remove('show'), type === 'fail' ? 8000 : 4000);
       log('Toast: ' + message);
     }
   };
@@ -749,5 +753,12 @@
   updateDirection();
 
   log('Control panel v' + VERSION + ' loaded');
+
+  // Live route table (src/router.js), fetched from GitHub on every page. Routes added
+  // there need no reinstall of the Tampermonkey loader, whose own table is frozen in
+  // each browser. panel.js is loaded by the installed loader on every ERP page.
+  if (typeof OxygenUtils.loadScript === 'function') {
+    OxygenUtils.loadScript('router.js').catch((err) => OxygenUtils.error('Live router: ' + err.message));
+  }
 
 })();

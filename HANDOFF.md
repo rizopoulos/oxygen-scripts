@@ -36,6 +36,14 @@ Build a suite of browser automation scripts for Oxygen ERP (app.pelatologio.gr) 
 - [ ] **Switch to jsdelivr CDN** once scripts are stable (raw.githubusercontent.com is used for instant updates during development)
 - [ ] **Documentation** for adding new sequences
 
+## Shire hand-off (2026-10-30, v2.8.0)
+
+Shire's cashier opens Oxygen with `notices.php?m=303&shire_receipt=<no>` / `&shire_invoice=<no>` (D6: same POST as ΑΠ/ΤΙΜ, same tab, the human presses Δημιουργία) and `invoices.php?m=301&shire_open=TAM-6372` (D7: open Oxygen's document modal). Table in CLAUDE.md, "Shire Hand-off Params".
+
+- `invoices.php` is routed by `src/router.js`, now the **live** route table (loaded by `panel.js`). No loader reinstall needed.
+- **Unverified:** the DOM of `invoices.php?m=301`. On first real use, open the console, read the `[Oxygen] shire_open ... DOM facts` line, and confirm which element opened the modal.
+- **Open:** a document not on the first page of the list is not found (needs Oxygen's list search, not captured). A notice number shared by two rows (notice + offer) is refused, not guessed.
+
 ## Failed Approaches (Don't Repeat These)
 
 | Approach | Why It Failed | Current Solution |

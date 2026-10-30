@@ -14,14 +14,16 @@ tampermonkey-loader.js          ← Only file in Tampermonkey. Fetches all other
   ├─ src/lib/panel.js           ← Floating control panel (right-side, red #D35155)
   ├─ src/pages/notices.js       ← Route: notices.php — ΑΠ/ΤΙΜ convert buttons per row
   ├─ src/pages/receipt-new.js   ← Route: receipts_new.php + invoices_new.php — unit reselect, payment, warehouse warning
-  └─ src/pages/duplicate.js     ← Global: search customer → find invoice → duplicate in new tab
+  ├─ src/pages/duplicate.js     ← Global: search customer → find invoice → duplicate in new tab
+  └─ src/router.js              ← LIVE route table, loaded by panel.js (no loader reinstall)
+       └─ src/pages/invoices.js ← Route: invoices.php — Shire `shire_open` → open document modal
 ```
 
 **Load order**: loader fetches `utils.js` → `panel.js` → global scripts (`duplicate.js`) → route-matched page scripts.
 
 Scripts are fetched from `raw.githubusercontent.com` and injected as `<script>` elements (not `eval`) to run in page scope.
 
-`src/router.js` exists but is **not used** — the loader has its own inline route table.
+`src/router.js` is the **live route table**: `panel.js` (loaded by the installed loader on every page) fetches it from GitHub, so a route added there needs **no reinstall** of the loader. The loader's own inline table is frozen in each browser. A page is routed in ONE place only (never both). Routed there today: `invoices.php` → `pages/invoices.js`.
 `snippets/` contains old standalone scripts kept for reference only.
 
 ## Key Constraints
@@ -56,9 +58,9 @@ Always bump the version as the **last edit** before committing, so the push incl
 ## Adding a New Page Script
 
 1. Create `src/pages/newpage.js` as an IIFE
-2. Add route to the `routes` array in `tampermonkey-loader.js` (or `globalScripts` if it should run everywhere)
+2. Add the route to `src/router.js` (live, no reinstall). Only the loader's `routes`/`globalScripts` need a loader edit, and that means every browser re-pastes the loader.
 3. Register panel buttons via `OxygenPanel.addButton(icon, label, onClick)` with state management via `OxygenPanel.setButtonState(btn, 'running'|'active')`
-4. Bump VERSION in loader
+4. Bump `version.json` (the loader `@version` only changes when the loader itself changes)
 
 ## AJAX Endpoints
 
@@ -77,3 +79,15 @@ Scripts are fetched with `?v=VERSION&_=Date.now()`. The `Date.now()` suffix is n
 - Modal click flow for notice conversion — timing-dependent, use direct POST instead
 - Enter key for search + select — race condition with debounce; use Arrow keys + Enter
 - Hover-to-expand panel — user wants explicit click toggle
+
+## Shire Hand-off Params
+
+Shire (the cashier, `shire.rizopouloscoffee.gr`) cannot POST into Oxygen: Oxygen's cookies are `SameSite=Lax`, so a cross-site POST arrives logged out. A top-level GET link does carry them, so Shire opens Oxygen pages with a query param and the userscript, running same-origin, does the work. Every param is validated by a strict regex, matched against the page as text (never `innerHTML` or selectors), acted on once, and removed with `history.replaceState`. Failures show a sticky red toast and do nothing.
+
+| Param | Page | Sent by | Does |
+|---|---|---|---|
+| `shire_receipt=<notice no>` | `notices.php?m=303` | Shire cashier, card notice | Finds the row by notice number, same POST as **ΑΠ**, same tab. Lands on the prefilled receipt; the human presses Δημιουργία (the POS fires there). |
+| `shire_invoice=<notice no>` | `notices.php?m=303` | Shire cashier | Same, as **ΤΙΜ** (`invoices_new.php`). |
+| `shire_open=<SERIES>-<NO>` (e.g. `TAM-6372`) | `invoices.php?m=301` | Shire cashier, issued receipt | Finds the row (TAM and ΤΑΜ compare equal) and clicks the row's own viewer to open Oxygen's document modal. **DOM of this page is unverified**; the console logs the row's `data-action`/`data-docid`. Only the first page of the list is searched (open TODO). |
+
+Decisions: Shire repo, `grill-sessions/cashier-url-state.md` D6 and D7.

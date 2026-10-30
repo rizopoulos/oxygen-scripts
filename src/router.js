@@ -1,50 +1,36 @@
 // ===========================================================================
-// Oxygen Scripts - Router
+// Oxygen Scripts - Live Router
 // ===========================================================================
-// Maps URL patterns to page modules. The loader calls this after loading utils.
+// Route table that does NOT live in the installed Tampermonkey loader.
+//
+// The loader (tampermonkey-loader.js) is pasted into each browser by hand and is
+// never auto-updated, so its inline `routes` array is frozen per machine. This file
+// is fetched from GitHub main on every ERP page (panel.js loads it, and panel.js is
+// loaded everywhere), so a route added HERE reaches every browser with no reinstall.
+//
+// Rule: a page must be routed in ONE place only. Never list here a script that the
+// loader already routes (notices.js, receipt-new.js), or it would run twice.
 // ===========================================================================
 
 (function () {
   'use strict';
 
-  const BASE_URL = window.OXYGEN_SCRIPTS_BASE;
-  const url = window.location.href;
+  if (window.__oxygenLiveRouter) return;
+  window.__oxygenLiveRouter = true;
 
-  // Route table: URL pattern → script file
+  const { log, error, loadScript } = OxygenUtils;
+
+  // test() gets location.pathname. Exact page match, unlike the loader's indexOf,
+  // so invoices.php never fires on invoices_new.php.
   const routes = [
-    { pattern: 'notices.php',       script: 'pages/notices.js' },
-    { pattern: 'receipts_new.php',  script: 'pages/receipt-new.js' },
-    // Future sequences:
-    // { pattern: 'invoices_new.php',  script: 'pages/invoice-new.js' },
-    // { pattern: 'delivery_new.php',  script: 'pages/delivery-new.js' },
-    // { pattern: 'contacts.php',      script: 'pages/contacts.js' },
+    { test: (p) => /\/invoices\.php$/.test(p), script: 'pages/invoices.js' },
   ];
 
-  async function loadScript(path) {
-    const url = `${BASE_URL}/${path}`;
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error(`Failed to load ${path}: ${resp.status}`);
-    const code = await resp.text();
-    eval(code);
+  const path = window.location.pathname;
+  for (const r of routes) {
+    if (!r.test(path)) continue;
+    log('Live router: loading ' + r.script);
+    loadScript(r.script).catch((err) => error('Live router: ' + err.message));
   }
-
-  async function route() {
-    const matched = routes.filter(r => url.includes(r.pattern));
-    if (matched.length === 0) {
-      OxygenUtils.log(`No scripts for this page (${window.location.pathname})`);
-      return;
-    }
-
-    for (const match of matched) {
-      try {
-        OxygenUtils.log(`Loading ${match.script}...`);
-        await loadScript(match.script);
-      } catch (err) {
-        OxygenUtils.error(err.message);
-      }
-    }
-  }
-
-  route();
 
 })();
