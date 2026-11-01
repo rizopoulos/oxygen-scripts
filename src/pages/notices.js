@@ -7,6 +7,8 @@
 // Shire hand-off (cashier, grill-session D6):
 //   notices.php?m=303&shire_receipt=<notice number>   → same POST as ΑΠ
 //   notices.php?m=303&shire_invoice=<notice number>   → same POST as ΤΙΜ
+//   notices.php?m=303&shire_cancel=<notice number>    → cancels that notice NOW
+//     (Shire wholesale orders, grill D11/D12/D30: no confirm, refuses on any doubt)
 // but in the SAME tab. Lands on the prefilled form; the human presses Δημιουργία
 // (that is where the POS fires). Shire cannot POST here itself: Oxygen's cookies
 // are SameSite=Lax, so only a top-level GET from Shire arrives logged in.
@@ -229,13 +231,13 @@
     window.__oxygenShireNoticeHandled = true;
     if (window.location.origin !== ORIGIN) return;
 
-    const keys = Object.keys(SHIRE_PARAMS).filter((k) => readParam(k) !== null);
+    const allKeys = Object.keys(SHIRE_PARAMS).concat([CANCEL_PARAM]);
+    const keys = allKeys.filter((k) => readParam(k) !== null);
     if (keys.length === 0) return;
-    const allKeys = Object.keys(SHIRE_PARAMS);
 
     if (keys.length > 1) {
       stripParams(allKeys);
-      shireSay('Shire: το link ζητά και απόδειξη και τιμολόγιο. Δεν έγινε τίποτα.', 'fail');
+      shireSay('Shire: το link ζητά δύο ενέργειες μαζί (' + keys.join(', ') + '). Δεν έγινε τίποτα.', 'fail');
       return;
     }
 
@@ -244,6 +246,10 @@
     if (!NOTICE_NUMBER_RE.test(number)) {
       stripParams(allKeys);
       shireSay('Shire: μη έγκυρος αριθμός ειδοποίησης στο link. Δεν έγινε τίποτα.', 'fail');
+      return;
+    }
+    if (key === CANCEL_PARAM) {
+      await handleShireCancel(number, allKeys);
       return;
     }
     const targetPage = SHIRE_PARAMS[key];
@@ -280,7 +286,191 @@
     postConversion(tempId, targetPage, '_self');
   }
 
+  // ---- Shire cancel (wholesale orders, grill D11 / D12 / D30) ------------
+  // notices.php?m=303&shire_cancel=<notice number>
+  // Cancels the notice IMMEDIATELY, no confirm (Antonis, D12): Shire sends this link
+  // after it created the replacement notice. Cancelling is IRREVERSIBLE in Oxygen, so
+  // every doubt refuses and does nothing:
+  //   - 0 or 2+ rows with that number on the list
+  //   - the row reads cancelled, or is not pending (no convert link: completed)
+  //   - the row does not yield exactly one internal docid
+  //   - the docid is not in the list form's own search_array (wrong kind of id)
+  //   - the list's search form cannot be found (we send what Oxygen's UI sends)
+  // The request is Oxygen's own UI call, captured by Antonis 2026-11-01:
+  //   POST /loads/notices_actions.php
+  //   option=notice_status_change&option2=cancel&docid=550586
+  //   &jqPost[0][name]=pin1&jqPost[0][value]=&...&jqPost[21][name]=search_array&...
+  // jqPost is jQuery's serializeArray() of the list's filter form, built here from
+  // the live form, never hard-coded.
+  // NOT tested against the real Oxygen (irreversible). First real use: read the
+  // console lines starting "shire_cancel:".
+  const CANCEL_PARAM = 'shire_cancel';
+  const DOCID_RE = /^\d{1,12}$/;
+  const FLASH_KEY = 'oxygenShireCancelFlash';
+  const CANCELLED_TEXT_RE = /ακυρωμ|ακυρώθ|cancel/i;
+
+  // Every distinct data-docid inside the row (the convert link carries it). Exactly
+  // one distinct value, or nothing.
+  function rowDocid(row) {
+    const ids = new Set();
+    for (const el of row.querySelectorAll('[data-docid]')) {
+      const v = (el.getAttribute('data-docid') || '').trim();
+      if (v) ids.add(v);
+    }
+    if (ids.size !== 1) {
+      log('shire_cancel: row data-docid values: ' + JSON.stringify(Array.from(ids)));
+      return null;
+    }
+    return Array.from(ids)[0];
+  }
+
+  function rowLooksCancelled(row) {
+    return CANCELLED_TEXT_RE.test(row.textContent || '') || /cancel/i.test(row.className || '');
+  }
+
+  // The list's filter form: the one holding search_array (jqPost's last field in the
+  // capture). Fallback: the form holding pin1 (jqPost's first field).
+  function findSearchForm() {
+    const byArray = document.querySelector('form [name="search_array"]');
+    if (byArray && byArray.form) return byArray.form;
+    const byPin = document.querySelector('form [name="pin1"]');
+    if (byPin && byPin.form) return byPin.form;
+    return null;
+  }
+
+  // jQuery serializeArray() when jQuery is on the page (what Oxygen itself uses);
+  // otherwise the same rules by hand: named, enabled, non-button controls, checked
+  // boxes and radios only, every selected option.
+  function serializeForm(form) {
+    if (window.jQuery) {
+      return window.jQuery(form).serializeArray().map((f) => ({ name: f.name, value: f.value }));
+    }
+    const out = [];
+    for (const el of form.elements) {
+      if (!el.name || el.disabled) continue;
+      const type = (el.type || '').toLowerCase();
+      if (['submit', 'button', 'reset', 'image', 'file'].includes(type)) continue;
+      if ((type === 'checkbox' || type === 'radio') && !el.checked) continue;
+      if (el.tagName === 'SELECT') {
+        for (const opt of el.options) if (opt.selected) out.push({ name: el.name, value: opt.value });
+        continue;
+      }
+      out.push({ name: el.name, value: (el.value || '').replace(/\r?\n/g, '\r\n') });
+    }
+    return out;
+  }
+
+  function buildCancelBody(docid, fields) {
+    const body = new URLSearchParams();
+    body.append('option', 'notice_status_change');
+    body.append('option2', 'cancel');
+    body.append('docid', docid);
+    fields.forEach((f, i) => {
+      body.append('jqPost[' + i + '][name]', f.name);
+      body.append('jqPost[' + i + '][value]', f.value);
+    });
+    return body;
+  }
+
+  async function handleShireCancel(number, allKeys) {
+    if (window.__oxygenShireCancelSent) return; // never twice per page load
+    shireSay('Shire: αναζήτηση ειδοποίησης ' + number + ' για ακύρωση…');
+    const rows = await waitForMatch(() => {
+      const r = findNoticeRows(number);
+      return r.length ? r : null;
+    }, 8000);
+
+    // Strip before anything else happens, so a refresh or Back never repeats it.
+    stripParams(allKeys);
+
+    if (!rows) {
+      shireSay('Shire: η ειδοποίηση ' + number + ' δεν βρέθηκε σε αυτή τη σελίδα. Δεν ακυρώθηκε τίποτα.', 'fail');
+      return;
+    }
+    if (rows.length > 1) {
+      shireSay('Shire: ' + rows.length + ' ειδοποιήσεις με αριθμό ' + number + '. Δεν ακυρώθηκε τίποτα, ακύρωσέ τη χειροκίνητα.', 'fail');
+      return;
+    }
+    const row = rows[0];
+    if (rowLooksCancelled(row)) {
+      shireSay('Shire: η ειδοποίηση ' + number + ' είναι ήδη ακυρωμένη. Δεν έγινε τίποτα.', 'fail');
+      return;
+    }
+    if (!getTempId(row)) {
+      shireSay('Shire: η ειδοποίηση ' + number + ' δεν είναι σε εκκρεμότητα (ίσως έχει ολοκληρωθεί). Δεν ακυρώθηκε.', 'fail');
+      return;
+    }
+    const form = findSearchForm();
+    if (!form) {
+      log('shire_cancel: forms on page: ' + JSON.stringify(Array.from(document.forms).map((f) => f.id || f.name || f.getAttribute('action'))));
+      shireSay('Shire: δεν βρέθηκε η φόρμα αναζήτησης της λίστας. Δεν ακυρώθηκε τίποτα.', 'fail');
+      return;
+    }
+    const fields = serializeForm(form);
+    const searchArray = fields.find((f) => f.name === 'search_array');
+    // The convert link's data-docid (same id the ΑΠ/ΤΙΜ POST uses). With search_array
+    // present it must be one of the listed ids; without it, every data-docid in the
+    // row must agree.
+    const docid = searchArray ? getTempId(row) : rowDocid(row);
+    if (!docid || !DOCID_RE.test(docid)) {
+      shireSay('Shire: δεν βρέθηκε το εσωτερικό id της ειδοποίησης ' + number + '. Δεν ακυρώθηκε τίποτα.', 'fail');
+      return;
+    }
+    if (searchArray && searchArray.value.split(',').map((v) => v.trim()).indexOf(docid) === -1) {
+      log('shire_cancel: docid ' + docid + ' not in search_array "' + searchArray.value + '"');
+      shireSay('Shire: το id ' + docid + ' δεν ανήκει στη λίστα. Δεν ακυρώθηκε τίποτα.', 'fail');
+      return;
+    }
+
+    warnIfOddSeries(row, number);
+    window.__oxygenShireCancelSent = true;
+    log('shire_cancel: notice ' + number + ' docid=' + docid + ', jqPost fields=' + fields.length);
+    shireSay('Shire: ακύρωση ειδοποίησης ' + number + '…');
+
+    const resp = await fetch(ORIGIN + '/loads/notices_actions.php', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: buildCancelBody(docid, fields).toString(),
+    });
+    const text = await resp.text();
+    log('shire_cancel: HTTP ' + resp.status + ', response: ' + text.slice(0, 300));
+    if (!resp.ok) {
+      shireSay('Shire: το Oxygen απάντησε ' + resp.status + ' στην ακύρωση της ' + number + '. Έλεγξε τη λίστα.', 'fail');
+      return;
+    }
+
+    // The toast must survive the reload, and the reload checks that it took.
+    try { sessionStorage.setItem(FLASH_KEY, JSON.stringify({ number: number, at: Date.now() })); } catch (e) { /* storage blocked */ }
+    shireSay('Η ειδοποίηση Νο ' + number + ' ακυρώθηκε');
+    setTimeout(() => window.location.reload(), 1200);
+  }
+
+  // After the reload: show the result once, and warn if the row does not read cancelled.
+  async function showCancelFlash() {
+    let flash = null;
+    try {
+      flash = JSON.parse(sessionStorage.getItem(FLASH_KEY) || 'null');
+      sessionStorage.removeItem(FLASH_KEY);
+    } catch (e) { return; }
+    if (!flash || !NOTICE_NUMBER_RE.test(String(flash.number)) || Date.now() - flash.at > 60000) return;
+    const number = String(flash.number);
+    const rows = await waitForMatch(() => {
+      const r = findNoticeRows(number);
+      return r.length ? r : null;
+    }, 5000);
+    if (rows && rows.length === 1 && getTempId(rows[0]) && !rowLooksCancelled(rows[0])) {
+      shireSay('Shire: η ειδοποίηση ' + number + ' ΔΕΝ φαίνεται ακυρωμένη στη λίστα. Έλεγξέ τη.', 'fail');
+      return;
+    }
+    shireSay('Η ειδοποίηση Νο ' + number + ' ακυρώθηκε');
+  }
+
   waitAndInject();
+  showCancelFlash().catch(() => {});
   handleShireHandoff().catch((err) =>
     shireSay('Shire: σφάλμα (' + err.message + '). Δεν έγινε τίποτα.', 'fail'));
 
