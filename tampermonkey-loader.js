@@ -1,12 +1,17 @@
 // ==UserScript==
 // @name         Oxygen ERP Scripts
 // @namespace    https://github.com/rizopoulos/oxygen-scripts
-// @version      2.7.0
+// @version      2.9.0
 // @description  Automates repetitive workflows in Oxygen ERP (Pelatologio.gr)
 // @match        https://app.pelatologio.gr/*
 // @grant        none
-// @run-at       document-idle
+// @run-at       document-start
 // ==/UserScript==
+
+// Starts at document-start and downloads every script in parallel right away.
+// It injects them the moment the HTML has been parsed (readyState "interactive"),
+// so it never waits for Oxygen's images, iframes or third-party scripts (the old
+// window "load" wait, which could take tens of seconds).
 
 (function () {
   const REPO = 'https://raw.githubusercontent.com/rizopoulos/oxygen-scripts/main';
@@ -19,76 +24,72 @@
     { pattern: 'invoices_new.php', script: 'pages/receipt-new.js' },
   ];
 
-  // Scripts loaded on ALL pages that have the panel
+  // Scripts loaded on ALL ERP pages
   const globalScripts = [
     'pages/duplicate.js',
   ];
 
-  // Fetch current version from GitHub (always fresh via Date.now())
-  async function fetchVersion() {
-    try {
-      const resp = await fetch(REPO + '/version.json?_=' + Date.now());
-      if (!resp.ok) throw new Error(resp.status);
-      const data = await resp.json();
-      return data.version;
-    } catch (err) {
-      console.warn('[Oxygen] Could not fetch version, using fallback cache bust');
-      return 'unknown';
-    }
+  const t0 = performance.now();
+  function stamp() {
+    const d = new Date();
+    const p = (n, w) => String(n).padStart(w || 2, '0');
+    return p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds()) + '.' + p(d.getMilliseconds(), 3)
+      + ' +' + Math.round(performance.now() - t0) + 'ms';
+  }
+  function log(msg) { console.log('[Oxygen ' + stamp() + '] ' + msg); }
+
+  const bust = '?_=' + Date.now();
+
+  function get(url) {
+    return fetch(url + bust, { cache: 'no-store' }).then(function (r) {
+      if (!r.ok) throw new Error(url + ' ' + r.status);
+      return r.text();
+    });
   }
 
-  async function loadAndRun(path, cacheBust) {
-    const resp = await fetch(BASE + '/' + path + cacheBust);
-    if (!resp.ok) { console.error('[Oxygen] Failed to load ' + path + ': ' + resp.status); return; }
-    const code = await resp.text();
+  // Resolves as soon as the whole HTML is parsed. "interactive" comes before
+  // DOMContentLoaded and long before window "load"; nothing else is awaited.
+  const domParsed = new Promise(function (resolve) {
+    if (document.readyState !== 'loading') return resolve();
+    document.addEventListener('readystatechange', function onChange() {
+      if (document.readyState === 'loading') return;
+      document.removeEventListener('readystatechange', onChange);
+      resolve();
+    });
+  });
+
+  function inject(path, code) {
     const script = document.createElement('script');
-    script.textContent = code;
-    document.head.appendChild(script);
-    document.head.removeChild(script);
+    script.textContent = code + '\n//# sourceURL=oxygen/' + path;
+    (document.head || document.documentElement).appendChild(script);
+    script.remove();
   }
 
-  async function init() {
-    try {
-      // Fetch version dynamically from GitHub
-      var VERSION = await fetchVersion();
-      var CACHE_BUST = '?v=' + VERSION + '&_=' + Date.now();
+  const url = window.location.href;
+  const matched = routes.filter(function (r) { return url.indexOf(r.pattern) !== -1; }).map(function (r) { return r.script; });
+  const order = ['lib/utils.js', 'lib/panel.js'].concat(globalScripts, matched);
 
-      console.log('[Oxygen] v' + VERSION + ' loading...');
+  log('start, readyState=' + document.readyState);
 
-      // Load shared utils
-      await loadAndRun('lib/utils.js', CACHE_BUST);
+  // Every download starts now, in parallel.
+  const versionP = get(REPO + '/version.json')
+    .then(function (t) { return JSON.parse(t).version; })
+    .catch(function () { return 'unknown'; });
+  const codeP = order.map(function (path) {
+    return get(BASE + '/' + path).catch(function (err) { console.error('[Oxygen] Failed to load ' + path + ': ' + err.message); return null; });
+  });
 
-      // Set version on utils for control panel
-      if (window.OxygenUtils) window.OxygenUtils.VERSION = VERSION;
-
-      // Find matching page scripts
-      var url = window.location.href;
-      var matched = routes.filter(function(r) { return url.indexOf(r.pattern) !== -1; });
-
-      // Load control panel and global scripts on pages with routes OR on any ERP page
-      if (matched.length > 0 || url.indexOf('app.pelatologio.gr') !== -1) {
-        await loadAndRun('lib/panel.js', CACHE_BUST);
-
-        for (var g = 0; g < globalScripts.length; g++) {
-          console.log('[Oxygen] Loading ' + globalScripts[g]);
-          await loadAndRun(globalScripts[g], CACHE_BUST);
-        }
+  Promise.all([versionP, Promise.all(codeP), domParsed.then(function () { log('HTML parsed'); })])
+    .then(function (res) {
+      const VERSION = res[0];
+      const codes = res[1];
+      log('v' + VERSION + ' downloaded, injecting');
+      for (let i = 0; i < order.length; i++) {
+        if (codes[i] === null) continue;
+        inject(order[i], codes[i]);
+        if (order[i] === 'lib/utils.js' && window.OxygenUtils) window.OxygenUtils.VERSION = VERSION;
       }
-
-      for (var i = 0; i < matched.length; i++) {
-        console.log('[Oxygen] Loading ' + matched[i].script);
-        await loadAndRun(matched[i].script, CACHE_BUST);
-      }
-
-      console.log('[Oxygen] v' + VERSION + ' ready');
-    } catch (err) {
-      console.error('[Oxygen] Error: ' + err.message);
-    }
-  }
-
-  if (document.readyState === 'complete') {
-    setTimeout(init, 300);
-  } else {
-    window.addEventListener('load', function() { setTimeout(init, 300); });
-  }
+      log('v' + VERSION + ' ready');
+    })
+    .catch(function (err) { console.error('[Oxygen] Error: ' + err.message); });
 })();
